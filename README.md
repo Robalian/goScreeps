@@ -1,0 +1,1 @@
+Screeps Golang starter
