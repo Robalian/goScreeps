@@ -5,8 +5,8 @@ type StructureStorage struct {
 }
 
 func (storage StructureStorage) Store() Store {
-	var store = storage.ref.Get("store")
+	jsStore := storage.ref.Get("store")
 	return Store{
-		ref: store,
+		ref: jsStore,
 	}
 }

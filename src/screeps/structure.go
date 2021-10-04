@@ -5,21 +5,21 @@ type Structure struct {
 }
 
 func (structure Structure) Hits() *int {
-	var jsHits = structure.ref.Get("hits")
+	jsHits := structure.ref.Get("hits")
 	if jsHits.IsUndefined() {
 		return nil
 	} else {
-		var result = jsHits.Int()
+		result := jsHits.Int()
 		return &result
 	}
 }
 
 func (structure Structure) HitsMax() *int {
-	var jsHits = structure.ref.Get("hitsMax")
+	jsHits := structure.ref.Get("hitsMax")
 	if jsHits.IsUndefined() {
 		return nil
 	} else {
-		var result = jsHits.Int()
+		result := jsHits.Int()
 		return &result
 	}
 }
@@ -29,12 +29,12 @@ func (structure Structure) Id() string {
 }
 
 func (structure Structure) StructureType() StructureConstant {
-	var result = structure.ref.Get("structureType").String()
+	result := structure.ref.Get("structureType").String()
 	return StructureConstant(result)
 }
 
 func (structure Structure) Destroy() ErrorCode {
-	var result = structure.ref.Call("destroy").Int()
+	result := structure.ref.Call("destroy").Int()
 	return ErrorCode(result)
 }
 
@@ -43,6 +43,6 @@ func (structure Structure) IsActive() bool {
 }
 
 func (structure Structure) NotifyWhenAttacked(enabled bool) ErrorCode {
-	var result = structure.ref.Call("notifyWhenAttacked", enabled).Int()
+	result := structure.ref.Call("notifyWhenAttacked", enabled).Int()
 	return ErrorCode(result)
 }

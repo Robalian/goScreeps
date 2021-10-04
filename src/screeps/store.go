@@ -17,7 +17,7 @@ func (store Store) GetCapacity(resource *ResourceConstant) *int {
 	if callResult.IsNull() {
 		return nil
 	} else {
-		var result = new(int)
+		result := new(int)
 		*result = callResult.Int()
 		return result
 	}
@@ -34,7 +34,7 @@ func (store Store) GetFreeCapacity(resource *ResourceConstant) *int {
 	if callResult.IsNull() {
 		return nil
 	} else {
-		var result = new(int)
+		result := new(int)
 		*result = callResult.Int()
 		return result
 	}
@@ -51,7 +51,7 @@ func (store Store) GetUsedCapacity(resource *ResourceConstant) *int {
 	if callResult.IsNull() {
 		return nil
 	} else {
-		var result = new(int)
+		result := new(int)
 		*result = callResult.Int()
 		return result
 	}

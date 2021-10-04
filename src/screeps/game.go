@@ -29,15 +29,15 @@ type game struct {
 }
 
 func (g game) ConstructionSites() map[string]ConstructionSite {
-	var constructionSites = g.ref.Get("constructionSites")
-	var result = map[string]ConstructionSite{}
+	jsConstructionSites := g.ref.Get("constructionSites")
+	result := map[string]ConstructionSite{}
 
-	var entries = object.Call("entries", constructionSites)
-	var length = entries.Get("length").Int()
+	entries := object.Call("entries", jsConstructionSites)
+	length := entries.Get("length").Int()
 	for i := 0; i < length; i++ {
-		var v = entries.Index(i)
-		result[v.Index(0).String()] = ConstructionSite{RoomObject{
-			ref: v.Index(1),
+		entry := entries.Index(i)
+		result[entry.Index(0).String()] = ConstructionSite{RoomObject{
+			ref: entry.Index(1),
 		}}
 	}
 
@@ -45,30 +45,32 @@ func (g game) ConstructionSites() map[string]ConstructionSite {
 }
 
 func (g game) Cpu() Cpu {
-	var cpu = g.ref.Get("cpu")
+	jsCpu := g.ref.Get("cpu")
 
-	var result = Cpu{
-		Limit:        cpu.Get("limit").Int(),
-		TickLimit:    cpu.Get("tickLimit").Int(),
-		Bucket:       cpu.Get("bucket").Int(),
+	result := Cpu{
+		Limit:        jsCpu.Get("limit").Int(),
+		TickLimit:    jsCpu.Get("tickLimit").Int(),
+		Bucket:       jsCpu.Get("bucket").Int(),
 		ShardLimits:  map[string]int{},
-		Unlocked:     cpu.Get("unlocked").Bool(),
+		Unlocked:     jsCpu.Get("unlocked").Bool(),
 		UnlockedTime: nil,
 	}
 
 	// shard limits
-	var shardLimitsEntries = object.Call("entries", cpu.Get("shardLimits"))
-	var length = shardLimitsEntries.Get("length").Int()
-	for i := 0; i < length; i++ {
-		var v = shardLimitsEntries.Index(i)
-		result.ShardLimits[v.Index(0).String()] = v.Index(1).Int()
+	shardLimitsEntries := object.Call("entries", jsCpu.Get("shardLimits"))
+	shardLimitsLength := shardLimitsEntries.Get("length").Int()
+	for i := 0; i < shardLimitsLength; i++ {
+		entry := shardLimitsEntries.Index(i)
+		key := entry.Index(0).String()
+		value := entry.Index(1).Int()
+		result.ShardLimits[key] = value
 	}
 
 	// unlocked time
-	var unlockedTime = cpu.Get("unlockedTime")
-	if !unlockedTime.IsUndefined() {
+	jsUnlockedTime := jsCpu.Get("unlockedTime")
+	if !jsUnlockedTime.IsUndefined() {
 		result.UnlockedTime = new(int)
-		*result.UnlockedTime = unlockedTime.Int()
+		*result.UnlockedTime = jsUnlockedTime.Int()
 	}
 
 	//
@@ -76,15 +78,17 @@ func (g game) Cpu() Cpu {
 }
 
 func (g game) Creeps() map[string]Creep {
-	var creeps = g.ref.Get("creeps")
-	var result = map[string]Creep{}
+	jsCreeps := g.ref.Get("creeps")
+	result := map[string]Creep{}
 
-	var entries = object.Call("entries", creeps)
-	var length = entries.Get("length").Int()
+	entries := object.Call("entries", jsCreeps)
+	length := entries.Get("length").Int()
 	for i := 0; i < length; i++ {
-		var v = entries.Index(i)
-		result[v.Index(0).String()] = Creep{RoomObject{
-			ref: v.Index(1),
+		entry := entries.Index(i)
+		key := entry.Index(0).String()
+		value := entry.Index(1)
+		result[key] = Creep{RoomObject{
+			ref: value,
 		}}
 	}
 
@@ -92,15 +96,17 @@ func (g game) Creeps() map[string]Creep {
 }
 
 func (g game) Flags() map[string]Flag {
-	var creeps = g.ref.Get("flags")
-	var result = map[string]Flag{}
+	jsFlags := g.ref.Get("flags")
+	result := map[string]Flag{}
 
-	var entries = object.Call("entries", creeps)
-	var length = entries.Get("length").Int()
+	entries := object.Call("entries", jsFlags)
+	length := entries.Get("length").Int()
 	for i := 0; i < length; i++ {
-		var v = entries.Index(i)
-		result[v.Index(0).String()] = Flag{RoomObject{
-			ref: v.Index(1),
+		entry := entries.Index(i)
+		key := entry.Index(0).String()
+		value := entry.Index(1)
+		result[key] = Flag{RoomObject{
+			ref: value,
 		}}
 	}
 
@@ -108,40 +114,42 @@ func (g game) Flags() map[string]Flag {
 }
 
 func (g game) Gcl() GlobalControlLevel {
-	var gcl = g.ref.Get("gcl")
+	jsGcl := g.ref.Get("gcl")
 	return GlobalControlLevel{
-		Level:         gcl.Get("level").Int(),
-		Progress:      gcl.Get("progress").Int(),
-		ProgressTotal: gcl.Get("progressTotal").Int(),
+		Level:         jsGcl.Get("level").Int(),
+		Progress:      jsGcl.Get("progress").Int(),
+		ProgressTotal: jsGcl.Get("progressTotal").Int(),
 	}
 }
 
 func (g game) Gpl() GlobalPowerLevel {
-	var gpl = g.ref.Get("gpl")
+	jsGpl := g.ref.Get("gpl")
 	return GlobalPowerLevel{
-		Level:         gpl.Get("level").Int(),
-		Progress:      gpl.Get("progress").Int(),
-		ProgressTotal: gpl.Get("progressTotal").Int(),
+		Level:         jsGpl.Get("level").Int(),
+		Progress:      jsGpl.Get("progress").Int(),
+		ProgressTotal: jsGpl.Get("progressTotal").Int(),
 	}
 }
 
 func (g game) GetObjectById(id string) RoomObject {
-	var objectById = g.ref.Call("getObjectById", id)
+	jsRoomObject := g.ref.Call("getObjectById", id)
 	return RoomObject{
-		ref: objectById,
+		ref: jsRoomObject,
 	}
 }
 
 func (g game) Spawns() map[string]StructureSpawn {
-	var spawns = g.ref.Get("spawns")
-	var result = map[string]StructureSpawn{}
+	jsSpawns := g.ref.Get("spawns")
+	result := map[string]StructureSpawn{}
 
-	var entries = object.Call("entries", spawns)
-	var length = entries.Get("length").Int()
+	entries := object.Call("entries", jsSpawns)
+	length := entries.Get("length").Int()
 	for i := 0; i < length; i++ {
-		var v = entries.Index(i)
-		result[v.Index(0).String()] = StructureSpawn{OwnedStructure{Structure{RoomObject{
-			ref: v.Index(1),
+		entry := entries.Index(i)
+		key := entry.Index(0).String()
+		value := entry.Index(1)
+		result[key] = StructureSpawn{OwnedStructure{Structure{RoomObject{
+			ref: value,
 		}}}}
 	}
 
@@ -149,16 +157,18 @@ func (g game) Spawns() map[string]StructureSpawn {
 }
 
 func (g game) Structures() map[string]Structure {
-	var structures = g.ref.Get("structures")
-	var result = map[string]Structure{}
+	jsStructures := g.ref.Get("structures")
+	result := map[string]Structure{}
 
-	var entries = object.Call("entries", structures)
-	var length = entries.Get("length").Int()
+	entries := object.Call("entries", jsStructures)
+	length := entries.Get("length").Int()
 	for i := 0; i < length; i++ {
-		var v = entries.Index(i)
-		result[v.Index(0).String()] = Structure{
+		entry := entries.Index(i)
+		key := entry.Index(0).String()
+		value := entry.Index(1)
+		result[key] = Structure{
 			RoomObject{
-				ref: v.Index(1),
+				ref: value,
 			},
 		}
 	}

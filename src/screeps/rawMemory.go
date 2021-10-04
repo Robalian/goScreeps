@@ -21,11 +21,11 @@ func (rm rawMemory) Segments() *map[int]string {
 }
 
 func (rm rawMemory) ForeignSegment() *ForeignSegment {
-	var jsForeignSegment = rm.ref.Get("ForeignSegment")
+	jsForeignSegment := rm.ref.Get("ForeignSegment")
 	if jsForeignSegment.IsNull() {
 		return nil
 	} else {
-		var result = new(ForeignSegment)
+		result := new(ForeignSegment)
 		result.Username = jsForeignSegment.Get("username").String()
 		result.Id = jsForeignSegment.Get("id").Int()
 		result.Data = jsForeignSegment.Get("data").String()
@@ -73,19 +73,20 @@ func loadSegments() {
 		delete(RawMemory.segments, k)
 	}
 
-	var jsSegments = RawMemory.ref.Get("segments")
-	var entries = object.Call("entries", jsSegments)
-	var length = entries.Get("length").Int()
+	jsSegments := RawMemory.ref.Get("segments")
+	entries := object.Call("entries", jsSegments)
+	length := entries.Get("length").Int()
 	for i := 0; i < length; i++ {
-		var v = entries.Index(i)
-		var k, _ = strconv.Atoi(v.Index(0).String())
-		RawMemory.segments[k] = v.Index(1).String()
-		jsSegments.Set(v.Index(0).String(), js.Undefined())
+		entry := entries.Index(i)
+		key, _ := strconv.Atoi(entry.Index(0).String())
+		value := entry.Index(1).String()
+		RawMemory.segments[key] = value
+		jsSegments.Set(entry.Index(0).String(), js.Undefined())
 	}
 }
 
 func saveSegments() {
-	var jsSegments = RawMemory.ref.Get("segments")
+	jsSegments := RawMemory.ref.Get("segments")
 	for k := range RawMemory.segments {
 		jsSegments.Set(strconv.Itoa(k), RawMemory.segments[k])
 	}

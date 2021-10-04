@@ -13,16 +13,16 @@ func roleBuilder(creep Creep) {
 	}
 
 	if creep.Memory().Get("building").Truthy() {
-		var closestConstructionSite = creep.Pos().FindClosestByPath(FIND_CONSTRUCTION_SITES, nil)
+		closestConstructionSite := creep.Pos().FindClosestByPath(FIND_CONSTRUCTION_SITES, nil)
 		if closestConstructionSite != nil {
-			var constructionSite = ConstructionSite{RoomObject: *closestConstructionSite} // TODO
+			constructionSite := ConstructionSite{RoomObject: *closestConstructionSite} // TODO
 			if creep.Build(constructionSite) == ERR_NOT_IN_RANGE {
 				var color = "#ffffff" // TODO
 				creep.MoveTo(constructionSite.Pos(), &MoveToOpts{VisualizePathStyle: &PolyStyle{Stroke: &color}})
 			}
 		}
 	} else {
-		var source = creep.Pos().FindClosestByPath(FIND_SOURCES_ACTIVE, nil)
+		source := creep.Pos().FindClosestByPath(FIND_SOURCES_ACTIVE, nil)
 		if source != nil {
 			if creep.Harvest(Source{RoomObject: *source}) == ERR_NOT_IN_RANGE { // TODO
 				var color = "#ffaa00" // TODO

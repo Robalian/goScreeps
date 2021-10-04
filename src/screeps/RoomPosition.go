@@ -3,7 +3,7 @@ package screeps
 import "syscall/js"
 
 func packFindClosestByPathOpts(opts FindClosestByPathOpts) map[string]interface{} {
-	var result = packFindPathOpts(opts.FindPathOpts)
+	result := packFindPathOpts(opts.FindPathOpts)
 	if opts.Algorithm != nil {
 		result["algorithm"] = string(*opts.Algorithm)
 	}
@@ -33,7 +33,7 @@ func (pos RoomPosition) CreateConstructionSite(structureType StructureConstant, 
 	} else {
 		jsName = js.ValueOf(*name)
 	}
-	var result = pos.ref.Call("createConstructionSite", string(structureType), jsName).Int()
+	result := pos.ref.Call("createConstructionSite", string(structureType), jsName).Int()
 	return ErrorCode(result)
 }
 
@@ -59,7 +59,7 @@ func (pos RoomPosition) CreateFlag(name *string, color *ColorConstant, secondary
 		jsSecondaryColor = js.ValueOf(int(*secondaryColor))
 	}
 
-	var result = pos.ref.Call("createFlag", jsName, jsColor, jsSecondaryColor).Int()
+	result := pos.ref.Call("createFlag", jsName, jsColor, jsSecondaryColor).Int()
 	return ErrorCode(result)
 }
 
@@ -71,7 +71,7 @@ func (pos RoomPosition) FindClosestByPath(findType FindRoomObjectConstant, opts 
 		jsOpts = js.ValueOf(*opts)
 	}
 
-	var findResult = pos.ref.Call("findClosestByPath", int(findType), jsOpts)
+	findResult := pos.ref.Call("findClosestByPath", int(findType), jsOpts)
 	if findResult.IsNull() {
 		return nil
 	} else {
@@ -89,11 +89,11 @@ func (pos RoomPosition) FindClosestByPath_Exit(findType FindExitConstant, opts *
 		jsOpts = js.ValueOf(*opts)
 	}
 
-	var findResult = pos.ref.Call("findClosestByPath", int(findType), jsOpts)
+	findResult := pos.ref.Call("findClosestByPath", int(findType), jsOpts)
 	if findResult.IsNull() {
 		return nil
 	} else {
-		var result = makeRoomPosition(findResult)
+		result := makeRoomPosition(findResult)
 		return &result
 	}
 }
@@ -106,12 +106,12 @@ func (pos RoomPosition) FindClosestByPath_Objects(objects []RoomObject, opts *Fi
 		jsOpts = js.ValueOf(*opts)
 	}
 
-	var jsObjects = make([]interface{}, len(objects))
-	for i, v := range objects {
-		jsObjects[i] = v.ref
+	jsObjects := make([]interface{}, len(objects))
+	for i, object := range objects {
+		jsObjects[i] = object.ref
 	}
 
-	var findResult = pos.ref.Call("findClosestByPath", jsObjects, jsOpts)
+	findResult := pos.ref.Call("findClosestByPath", jsObjects, jsOpts)
 	if findResult.IsNull() {
 		return nil
 	} else {
@@ -129,22 +129,22 @@ func (pos RoomPosition) FindClosestByPath_Positions(positions []RoomPosition, op
 		jsOpts = js.ValueOf(*opts)
 	}
 
-	var jsPositions = make([]interface{}, len(positions))
+	jsPositions := make([]interface{}, len(positions))
 	for i, v := range positions {
 		jsPositions[i] = v.ref
 	}
 
-	var findResult = pos.ref.Call("findClosestByPath", jsPositions, jsOpts)
+	findResult := pos.ref.Call("findClosestByPath", jsPositions, jsOpts)
 	if findResult.IsNull() {
 		return nil
 	} else {
-		var result = makeRoomPosition(findResult)
+		result := makeRoomPosition(findResult)
 		return &result
 	}
 }
 
 func (pos RoomPosition) FindClosestByRange(findType FindRoomObjectConstant) *RoomObject {
-	var findResult = pos.ref.Call("findClosestByRange", int(findType))
+	findResult := pos.ref.Call("findClosestByRange", int(findType))
 	if findResult.IsNull() {
 		return nil
 	} else {
@@ -155,22 +155,22 @@ func (pos RoomPosition) FindClosestByRange(findType FindRoomObjectConstant) *Roo
 }
 
 func (pos RoomPosition) FindClosestByRange_Exit(findType FindExitConstant) *RoomPosition {
-	var findResult = pos.ref.Call("findClosestByRange", int(findType))
+	findResult := pos.ref.Call("findClosestByRange", int(findType))
 	if findResult.IsNull() {
 		return nil
 	} else {
-		var result = makeRoomPosition(findResult)
+		result := makeRoomPosition(findResult)
 		return &result
 	}
 }
 
 func (pos RoomPosition) FindClosestByRange_Objects(objects []RoomObject) *RoomObject {
-	var jsObjects = make([]interface{}, len(objects))
+	jsObjects := make([]interface{}, len(objects))
 	for i, v := range objects {
 		jsObjects[i] = v.ref
 	}
 
-	var findResult = pos.ref.Call("findClosestByRange", jsObjects)
+	findResult := pos.ref.Call("findClosestByRange", jsObjects)
 	if findResult.IsNull() {
 		return nil
 	} else {
@@ -181,24 +181,24 @@ func (pos RoomPosition) FindClosestByRange_Objects(objects []RoomObject) *RoomOb
 }
 
 func (pos RoomPosition) FindClosestByRange_Positions(positions []RoomPosition) *RoomPosition {
-	var jsPositions = make([]interface{}, len(positions))
+	jsPositions := make([]interface{}, len(positions))
 	for i, v := range positions {
 		jsPositions[i] = v.ref
 	}
 
-	var findResult = pos.ref.Call("findClosestByRange", jsPositions)
+	findResult := pos.ref.Call("findClosestByRange", jsPositions)
 	if findResult.IsNull() {
 		return nil
 	} else {
-		var result = makeRoomPosition(findResult)
+		result := makeRoomPosition(findResult)
 		return &result
 	}
 }
 
 func (pos RoomPosition) FindInRange(findType FindRoomObjectConstant, distance int) []RoomObject {
-	var findResult = pos.ref.Call("findInRange", int(findType), distance)
-	var length = findResult.Length()
-	var result = make([]RoomObject, length)
+	findResult := pos.ref.Call("findInRange", int(findType), distance)
+	length := findResult.Length()
+	result := make([]RoomObject, length)
 	for i := 0; i < length; i++ {
 		result[i] = RoomObject{ref: findResult.Index(i)}
 	}
@@ -206,9 +206,9 @@ func (pos RoomPosition) FindInRange(findType FindRoomObjectConstant, distance in
 }
 
 func (pos RoomPosition) FindInRange_Exit(findType FindExitConstant, distance int) []RoomPosition {
-	var findResult = pos.ref.Call("findInRange", int(findType), distance)
-	var length = findResult.Length()
-	var result = make([]RoomPosition, length)
+	findResult := pos.ref.Call("findInRange", int(findType), distance)
+	length := findResult.Length()
+	result := make([]RoomPosition, length)
 	for i := 0; i < length; i++ {
 		result[i] = makeRoomPosition(findResult.Index(i))
 	}
@@ -216,14 +216,14 @@ func (pos RoomPosition) FindInRange_Exit(findType FindExitConstant, distance int
 }
 
 func (pos RoomPosition) FindInRange_Objects(objects []RoomObject, distance int) []RoomObject {
-	var jsObjects = make([]interface{}, len(objects))
+	jsObjects := make([]interface{}, len(objects))
 	for i, v := range objects {
 		jsObjects[i] = v.ref
 	}
 
-	var findResult = pos.ref.Call("findInRange", jsObjects, distance)
-	var length = findResult.Length()
-	var result = make([]RoomObject, length)
+	findResult := pos.ref.Call("findInRange", jsObjects, distance)
+	length := findResult.Length()
+	result := make([]RoomObject, length)
 	for i := 0; i < length; i++ {
 		result[i] = RoomObject{ref: findResult.Index(i)}
 	}
@@ -231,14 +231,14 @@ func (pos RoomPosition) FindInRange_Objects(objects []RoomObject, distance int) 
 }
 
 func (pos RoomPosition) FindInRange_Positions(positions []RoomPosition, distance int) []RoomPosition {
-	var jsPositions = make([]interface{}, len(positions))
+	jsPositions := make([]interface{}, len(positions))
 	for i, v := range positions {
 		jsPositions[i] = v.ref
 	}
 
-	var findResult = pos.ref.Call("findInRange", jsPositions, distance)
-	var length = findResult.Length()
-	var result = make([]RoomPosition, length)
+	findResult := pos.ref.Call("findInRange", jsPositions, distance)
+	length := findResult.Length()
+	result := make([]RoomPosition, length)
 	for i := 0; i < length; i++ {
 		result[i] = makeRoomPosition(findResult.Index(i))
 	}
@@ -252,7 +252,7 @@ func (pos RoomPosition) FindPathTo(toPos RoomPosition, opts *FindPathOpts) FindP
 	} else {
 		jsOpts = js.ValueOf(packFindPathOpts(*opts))
 	}
-	var path = pos.ref.Call("findPathTo", toPos.ref, jsOpts)
+	path := pos.ref.Call("findPathTo", toPos.ref, jsOpts)
 	return unpackFindPathResult(path)
 }
 
@@ -263,17 +263,17 @@ func (pos RoomPosition) FindPathTo_XY(x int, y int, opts *FindPathOpts) FindPath
 	} else {
 		jsOpts = js.ValueOf(packFindPathOpts(*opts))
 	}
-	var path = pos.ref.Call("findPathTo", x, y, jsOpts)
+	path := pos.ref.Call("findPathTo", x, y, jsOpts)
 	return unpackFindPathResult(path)
 }
 
 func (pos RoomPosition) GetDirectionTo(target RoomPosition) DirectionConstant {
-	var result = pos.ref.Call("getDirectionTo", target.ref).Int()
+	result := pos.ref.Call("getDirectionTo", target.ref).Int()
 	return DirectionConstant(result)
 }
 
 func (pos RoomPosition) GetDirectionTo_XY(x int, y int) DirectionConstant {
-	var result = pos.ref.Call("getDirectionTo", x, y).Int()
+	result := pos.ref.Call("getDirectionTo", x, y).Int()
 	return DirectionConstant(result)
 }
 
@@ -310,11 +310,11 @@ func (pos RoomPosition) IsNearTo_XY(x int, y int, distance int) bool {
 }
 
 func (pos RoomPosition) Look() LookAtResult {
-	var lookAtResult = pos.ref.Call("look")
+	lookAtResult := pos.ref.Call("look")
 	return unpackLookAtResult(lookAtResult)
 }
 
 func (pos RoomPosition) LookFor() []RoomObject {
-	var lookAtResult = pos.ref.Call("lookFor")
+	lookAtResult := pos.ref.Call("lookFor")
 	return unpackLookForAtResult(lookAtResult)
 }

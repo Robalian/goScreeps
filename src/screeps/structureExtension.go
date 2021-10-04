@@ -5,8 +5,8 @@ type StructureExtension struct {
 }
 
 func (extension StructureExtension) Store() Store {
-	var store = extension.ref.Get("store")
+	jsStore := extension.ref.Get("store")
 	return Store{
-		ref: store,
+		ref: jsStore,
 	}
 }

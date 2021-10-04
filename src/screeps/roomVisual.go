@@ -44,7 +44,7 @@ func MakeRoomVisual(roomName *string) RoomVisual {
 		jsRoomName = js.ValueOf(*roomName)
 	}
 
-	var result = js.Global().Get("RoomVisual").New(jsRoomName)
+	result := js.Global().Get("RoomVisual").New(jsRoomName)
 	return RoomVisual{
 		ref: result,
 	}
@@ -125,9 +125,9 @@ func (visual RoomVisual) Rect_XY(x int, y int, width int, height int, style *Rec
 }
 
 func (visual RoomVisual) Poly_XY(points []PolyPoint, style *PolyStyle) RoomVisual {
-	var pointLength = len(points)
-	var jsPoints = make([]interface{}, pointLength)
-	for i := 0; i < pointLength; i++ {
+	pointsCount := len(points)
+	jsPoints := make([]interface{}, pointsCount)
+	for i := 0; i < pointsCount; i++ {
 		jsPoints[i] = []interface{}{
 			points[i][0],
 			points[i][1],
@@ -144,9 +144,9 @@ func (visual RoomVisual) Poly_XY(points []PolyPoint, style *PolyStyle) RoomVisua
 }
 
 func (visual RoomVisual) Poly(points []RoomPosition, style *PolyStyle) RoomVisual {
-	var pointLength = len(points)
-	var jsPoints = make([]interface{}, pointLength)
-	for i := 0; i < pointLength; i++ {
+	pointsCount := len(points)
+	jsPoints := make([]interface{}, pointsCount)
+	for i := 0; i < pointsCount; i++ {
 		jsPoints[i] = points[i].ref
 	}
 	var jsStyle js.Value

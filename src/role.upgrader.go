@@ -19,7 +19,7 @@ func roleUpgrader(creep Creep) {
 		}
 	} else {
 		var color = "#ffaa00" // TODO
-		var source = creep.Pos().FindClosestByPath(FIND_SOURCES_ACTIVE, nil)
+		source := creep.Pos().FindClosestByPath(FIND_SOURCES_ACTIVE, nil)
 		if source != nil {
 			if creep.Harvest(Source{RoomObject: *source}) == ERR_NOT_IN_RANGE { // TODO
 				creep.MoveTo(source.Pos(), &MoveToOpts{VisualizePathStyle: &PolyStyle{Stroke: &color}})

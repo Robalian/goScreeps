@@ -44,8 +44,8 @@ type StoreStructure struct {
 }
 
 func (storeStructure StoreStructure) Store() Store {
-	var store = storeStructure.ref.Get("store")
+	jsStore := storeStructure.ref.Get("store")
 	return Store{
-		ref: store,
+		ref: jsStore,
 	}
 }

@@ -3,7 +3,7 @@ package screeps
 import "syscall/js"
 
 func MakeRoomTerrain(roomName string) RoomTerrain {
-	var result = js.Global().Get("Room").Get("Terrain").New(roomName)
+	result := js.Global().Get("Room").Get("Terrain").New(roomName)
 	return RoomTerrain{
 		ref: result,
 	}

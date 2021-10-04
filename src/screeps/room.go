@@ -14,12 +14,12 @@ var RoomConstructor = roomConstructor{
 }
 
 func (room Room) Controller() *StructureController {
-	var controller = room.ref.Get("controller")
-	if controller.IsUndefined() {
+	jsController := room.ref.Get("controller")
+	if jsController.IsUndefined() {
 		return nil
 	} else {
-		var result = new(StructureController)
-		result.ref = controller
+		result := new(StructureController)
+		result.ref = jsController
 		return result
 	}
 }
@@ -41,41 +41,41 @@ func (room Room) Name() string {
 }
 
 func (room Room) Storage() *StructureStorage {
-	var storage = room.ref.Get("storage")
-	if storage.IsUndefined() {
+	jsStorage := room.ref.Get("storage")
+	if jsStorage.IsUndefined() {
 		return nil
 	} else {
-		var result = new(StructureStorage)
-		result.ref = storage
+		result := new(StructureStorage)
+		result.ref = jsStorage
 		return result
 	}
 }
 
 func (room Room) Terminal() *StructureTerminal {
-	var terminal = room.ref.Get("storage")
-	if terminal.IsUndefined() {
+	jsTerminal := room.ref.Get("storage")
+	if jsTerminal.IsUndefined() {
 		return nil
 	} else {
-		var result = new(StructureTerminal)
-		result.ref = terminal
+		result := new(StructureTerminal)
+		result.ref = jsTerminal
 		return result
 	}
 }
 
 func (room Room) Visual() RoomVisual {
-	var visual = room.ref.Get("visual")
+	jsVisual := room.ref.Get("visual")
 	return RoomVisual{
-		ref: visual,
+		ref: jsVisual,
 	}
 }
 
 func (room roomConstructor) SerializePath(path FindPathResult) string {
-	var packedPath = packFindPathResult(path)
+	packedPath := packFindPathResult(path)
 	return room.ref.Call("serializePath", packedPath).String()
 }
 
 func (room roomConstructor) DeserializePath(path string) FindPathResult {
-	var deserializedPath = room.ref.Call("deserializePath", path)
+	deserializedPath := room.ref.Call("deserializePath", path)
 	return unpackFindPathResult(deserializedPath)
 }
 
@@ -86,7 +86,7 @@ func (room Room) CreateConstructionSite(pos RoomPosition, structureType Structur
 	} else {
 		jsName = js.ValueOf(*name)
 	}
-	var result = room.ref.Call("createConstructionSite", pos.ref, string(structureType), jsName).Int()
+	result := room.ref.Call("createConstructionSite", pos.ref, string(structureType), jsName).Int()
 	return ErrorCode(result)
 }
 
@@ -97,7 +97,7 @@ func (room Room) CreateConstructionSite_XY(x int, y int, structureType Structure
 	} else {
 		jsName = js.ValueOf(*name)
 	}
-	var result = room.ref.Call("createConstructionSite", x, y, string(structureType), jsName).Int()
+	result := room.ref.Call("createConstructionSite", x, y, string(structureType), jsName).Int()
 	return ErrorCode(result)
 }
 
@@ -123,7 +123,7 @@ func (room Room) CreateFlag(pos RoomPosition, name *string, color *ColorConstant
 		jsSecondaryColor = js.ValueOf(int(*secondaryColor))
 	}
 
-	var result = room.ref.Call("createFlag", pos.ref, jsName, jsColor, jsSecondaryColor).Int()
+	result := room.ref.Call("createFlag", pos.ref, jsName, jsColor, jsSecondaryColor).Int()
 	return ErrorCode(result)
 }
 
@@ -149,15 +149,15 @@ func (room Room) CreateFlag_XY(x int, y int, name *string, color *ColorConstant,
 		jsSecondaryColor = js.ValueOf(int(*secondaryColor))
 	}
 
-	var result = room.ref.Call("createFlag", x, y, jsName, jsColor, jsSecondaryColor).Int()
+	result := room.ref.Call("createFlag", x, y, jsName, jsColor, jsSecondaryColor).Int()
 	return ErrorCode(result)
 }
 
 func (room Room) Find(findType FindRoomObjectConstant) []RoomObject {
-	var foundPositions = room.ref.Call("find", int(findType))
-	var length = foundPositions.Length()
-	var result = make([]RoomObject, length)
-	for i := 0; i < length; i++ {
+	foundPositions := room.ref.Call("find", int(findType))
+	foundPositionsCount := foundPositions.Length()
+	result := make([]RoomObject, foundPositionsCount)
+	for i := 0; i < foundPositionsCount; i++ {
 		result[i] = RoomObject{
 			ref: foundPositions.Index(i),
 		}
@@ -166,10 +166,10 @@ func (room Room) Find(findType FindRoomObjectConstant) []RoomObject {
 }
 
 func (room Room) Find_Positions(findType FindExitConstant) []RoomPosition {
-	var foundPositions = room.ref.Call("find", int(findType))
-	var length = foundPositions.Length()
-	var result = make([]RoomPosition, length)
-	for i := 0; i < length; i++ {
+	foundPositions := room.ref.Call("find", int(findType))
+	foundPositionsCount := foundPositions.Length()
+	result := make([]RoomPosition, foundPositionsCount)
+	for i := 0; i < foundPositionsCount; i++ {
 		result[i] = makeRoomPosition(foundPositions.Index(i))
 	}
 	return result
@@ -186,7 +186,7 @@ func (room Room) FindPath(fromPos RoomPosition, toPos RoomPosition, opts *FindPa
 	} else {
 		jsOpts = js.ValueOf(packFindPathOpts(*opts))
 	}
-	var path = room.ref.Call("findPath", fromPos.ref, toPos.ref, jsOpts)
+	path := room.ref.Call("findPath", fromPos.ref, toPos.ref, jsOpts)
 	return unpackFindPathResult(path)
 }
 
@@ -195,36 +195,38 @@ func (room Room) GetEventLog() string {
 }
 
 func (room Room) GetPositionAt(x int, y int) RoomPosition {
-	var pos = room.ref.Call("getPositionAt", x, y)
-	return makeRoomPosition(pos)
+	jsPos := room.ref.Call("getPositionAt", x, y)
+	return makeRoomPosition(jsPos)
 }
 
 func (room Room) GetTerrain() RoomTerrain {
-	var terrain = room.ref.Call("getTerrain")
+	jsTerrain := room.ref.Call("getTerrain")
 	return RoomTerrain{
-		ref: terrain,
+		ref: jsTerrain,
 	}
 }
 
 func (room Room) LookAt(pos RoomPosition) LookAtResult {
-	var lookAtResult = room.ref.Call("lookAt", pos.ref)
+	lookAtResult := room.ref.Call("lookAt", pos.ref)
 	return unpackLookAtResult(lookAtResult)
 }
 
 func (room Room) LookAt_XY(x int, y int) LookAtResult {
-	var lookAtResult = room.ref.Call("lookAt", x, y)
+	lookAtResult := room.ref.Call("lookAt", x, y)
 	return unpackLookAtResult(lookAtResult)
 }
 
 func (room Room) LookAtArea(top int, left int, bottom int, right int) LookAtAreaResult {
-	var lookAtAreaResult = room.ref.Call("lookAtArea", top, left, bottom, right, true)
+	lookAtAreaResult := room.ref.Call("lookAtArea", top, left, bottom, right, true)
 
-	var length = lookAtAreaResult.Length()
-	var result = LookAtAreaResult{}
+	length := lookAtAreaResult.Length()
+	result := LookAtAreaResult{}
 	for i := 0; i < length; i++ {
-		var v = lookAtAreaResult.Index(i)
-		var t = v.Get("type").String()
-		if t == "terrain" {
+		v := lookAtAreaResult.Index(i)
+		objectType := v.Get("type").String()
+
+		// we skip terrain, for type consistency (it's not a RoomObject) + it's better accessed through Game.map anyway
+		if objectType == "terrain" {
 			continue
 		}
 
@@ -237,9 +239,9 @@ func (room Room) LookAtArea(top int, left int, bottom int, right int) LookAtArea
 			}{
 				X:    v.Get("x").Int(),
 				Y:    v.Get("y").Int(),
-				Type: t,
+				Type: objectType,
 				Object: RoomObject{
-					ref: v.Get(t),
+					ref: v.Get(objectType),
 				},
 			})
 	}
@@ -248,22 +250,22 @@ func (room Room) LookAtArea(top int, left int, bottom int, right int) LookAtArea
 }
 
 func (room Room) LookForAt(lookType LookConstant, pos RoomPosition) []RoomObject {
-	var lookForAtResult = room.ref.Call("lookForAt", string(lookType), pos.ref)
+	lookForAtResult := room.ref.Call("lookForAt", string(lookType), pos.ref)
 	return unpackLookForAtResult(lookForAtResult)
 }
 
 func (room Room) LookForAt_XY(lookType LookConstant, x int, y int) []RoomObject {
-	var lookForAtResult = room.ref.Call("lookForAt", string(lookType), x, y)
+	lookForAtResult := room.ref.Call("lookForAt", string(lookType), x, y)
 	return unpackLookForAtResult(lookForAtResult)
 }
 
 func (room Room) LookForAtArea(lookType LookConstant, top int, left int, bottom int, right int) LookForAtAreaResult {
-	var lookForAtAreaResult = room.ref.Call("lookForAtArea", string(lookType), top, left, bottom, right, true)
+	lookForAtAreaResult := room.ref.Call("lookForAtArea", string(lookType), top, left, bottom, right, true)
 
-	var length = lookForAtAreaResult.Length()
-	var result = LookForAtAreaResult{}
+	length := lookForAtAreaResult.Length()
+	result := LookForAtAreaResult{}
 	for i := 0; i < length; i++ {
-		var v = lookForAtAreaResult.Index(i)
+		v := lookForAtAreaResult.Index(i)
 
 		result = append(result,
 			struct {

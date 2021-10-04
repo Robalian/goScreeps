@@ -5,7 +5,7 @@ type Flag struct {
 }
 
 func (flag Flag) Color() ColorConstant {
-	var result = flag.ref.Get("color").Int()
+	result := flag.ref.Get("color").Int()
 	return ColorConstant(result)
 }
 
@@ -18,7 +18,7 @@ func (flag Flag) Name() string {
 }
 
 func (flag Flag) SecondaryColor() ColorConstant {
-	var result = flag.ref.Get("secondaryColor").Int()
+	result := flag.ref.Get("secondaryColor").Int()
 	return ColorConstant(result)
 }
 

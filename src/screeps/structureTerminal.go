@@ -11,9 +11,9 @@ func (terminal StructureTerminal) Cooldown() int {
 }
 
 func (terminal StructureTerminal) Store() Store {
-	var store = terminal.ref.Get("store")
+	jsStore := terminal.ref.Get("store")
 	return Store{
-		ref: store,
+		ref: jsStore,
 	}
 }
 
@@ -24,6 +24,6 @@ func (terminal StructureTerminal) Send(resourceType ResourceConstant, amount int
 	} else {
 		jsDescription = js.ValueOf(*description)
 	}
-	var result = terminal.ref.Call("send", string(resourceType), amount, destination, jsDescription).Int()
+	result := terminal.ref.Call("send", string(resourceType), amount, destination, jsDescription).Int()
 	return ErrorCode(result)
 }

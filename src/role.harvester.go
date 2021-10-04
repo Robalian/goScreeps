@@ -4,7 +4,7 @@ import . "screepsgo/src/screeps"
 
 func roleHarvester(creep Creep) {
 	if *creep.Store().GetFreeCapacity(nil) > 0 {
-		var source = creep.Pos().FindClosestByPath(FIND_SOURCES_ACTIVE, nil)
+		source := creep.Pos().FindClosestByPath(FIND_SOURCES_ACTIVE, nil)
 		if source != nil {
 			if creep.Harvest(Source{RoomObject: *source}) == ERR_NOT_IN_RANGE { // TODO
 				var color = "#ffaa00" // TODO
@@ -12,16 +12,17 @@ func roleHarvester(creep Creep) {
 			}
 		}
 	} else {
-		var targets = creep.Room().Find(FIND_STRUCTURES)
-		var validTargets = []Structure{}
+		targets := creep.Room().Find(FIND_STRUCTURES)
+		validTargets := []Structure{}
 		for _, v := range targets {
-			var structure = Structure{RoomObject: v}                  // TODO
-			var storeStructure = StoreStructure{Structure: structure} // TODO
-			if (structure.StructureType() == STRUCTURE_EXTENSION ||
+			structure := Structure{RoomObject: v} // TODO
+			if structure.StructureType() == STRUCTURE_EXTENSION ||
 				structure.StructureType() == STRUCTURE_SPAWN ||
-				structure.StructureType() == STRUCTURE_TOWER) &&
-				*storeStructure.Store().GetFreeCapacity(&RESOURCE_ENERGY) > 0 {
-				validTargets = append(validTargets, structure)
+				structure.StructureType() == STRUCTURE_TOWER {
+				storeStructure := StoreStructure{Structure: structure} // TODO
+				if *storeStructure.Store().GetFreeCapacity(&RESOURCE_ENERGY) > 0 {
+					validTargets = append(validTargets, structure)
+				}
 			}
 		}
 

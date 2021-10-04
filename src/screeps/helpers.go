@@ -5,7 +5,7 @@ import "syscall/js"
 var object = js.Global().Get("Object")
 
 func packLineStyle(style LineStyle) map[string]interface{} {
-	var result = map[string]interface{}{}
+	result := map[string]interface{}{}
 	if style.Color != nil {
 		result["color"] = *style.Color
 	}
@@ -22,7 +22,7 @@ func packLineStyle(style LineStyle) map[string]interface{} {
 }
 
 func packCircleStyle(style CircleStyle) map[string]interface{} {
-	var result = map[string]interface{}{}
+	result := map[string]interface{}{}
 	if style.Radius != nil {
 		result["radius"] = *style.Radius
 	}
@@ -45,7 +45,7 @@ func packCircleStyle(style CircleStyle) map[string]interface{} {
 }
 
 func packRectStyle(style RectStyle) map[string]interface{} {
-	var result = map[string]interface{}{}
+	result := map[string]interface{}{}
 	if style.Fill != nil {
 		result["fill"] = *style.Fill
 	}
@@ -65,7 +65,7 @@ func packRectStyle(style RectStyle) map[string]interface{} {
 }
 
 func packPolyStyle(style PolyStyle) map[string]interface{} {
-	var result = map[string]interface{}{}
+	result := map[string]interface{}{}
 	if style.Fill != nil {
 		result["fill"] = *style.Fill
 	}
@@ -84,7 +84,7 @@ func packPolyStyle(style PolyStyle) map[string]interface{} {
 	return result
 }
 func packFindPathOpts(opts FindPathOpts) map[string]interface{} {
-	var result = map[string]interface{}{}
+	result := map[string]interface{}{}
 
 	if opts.HeuristicWeight != nil {
 		result["heuristicWeight"] = *opts.HeuristicWeight
@@ -121,7 +121,7 @@ func packFindPathOpts(opts FindPathOpts) map[string]interface{} {
 }
 
 func packMoveToOpts(opts MoveToOpts) map[string]interface{} {
-	var result = packFindPathOpts(opts.FindPathOpts)
+	result := packFindPathOpts(opts.FindPathOpts)
 
 	if opts.NoPathFinding != nil {
 		result["noPathFinding"] = *opts.NoPathFinding
@@ -140,10 +140,10 @@ func packMoveToOpts(opts MoveToOpts) map[string]interface{} {
 }
 
 func packFindPathResult(path FindPathResult) []interface{} {
-	var pathLength = len(path)
-	var result = make([]interface{}, pathLength)
+	pathLength := len(path)
+	result := make([]interface{}, pathLength)
 	for i := 0; i < pathLength; i++ {
-		var step = map[string]interface{}{}
+		step := map[string]interface{}{}
 		step["x"] = path[i].x
 		step["y"] = path[i].y
 		step["dx"] = path[i].dx
@@ -155,10 +155,10 @@ func packFindPathResult(path FindPathResult) []interface{} {
 }
 
 func unpackFindPathResult(path js.Value) FindPathResult {
-	var length = path.Length()
-	var result = make(FindPathResult, length)
-	for i := 0; i < length; i++ {
-		var v = path.Index(i)
+	pathLength := path.Length()
+	result := make(FindPathResult, pathLength)
+	for i := 0; i < pathLength; i++ {
+		step := path.Index(i)
 		result[i] = struct {
 			x         int
 			y         int
@@ -166,23 +166,25 @@ func unpackFindPathResult(path js.Value) FindPathResult {
 			dy        int
 			direction DirectionConstant
 		}{
-			x:         v.Get("x").Int(),
-			y:         v.Get("y").Int(),
-			dx:        v.Get("dx").Int(),
-			dy:        v.Get("dy").Int(),
-			direction: DirectionConstant(v.Get("direction").Int()),
+			x:         step.Get("x").Int(),
+			y:         step.Get("y").Int(),
+			dx:        step.Get("dx").Int(),
+			dy:        step.Get("dy").Int(),
+			direction: DirectionConstant(step.Get("direction").Int()),
 		}
 	}
 	return result
 }
 
 func unpackLookAtResult(lookAtResult js.Value) LookAtResult {
-	var length = lookAtResult.Length()
-	var result = LookAtResult{}
+	length := lookAtResult.Length()
+	result := LookAtResult{}
 	for i := 0; i < length; i++ {
-		var v = lookAtResult.Index(i)
-		var t = v.Get("type").String()
-		if t == "terrain" {
+		v := lookAtResult.Index(i)
+		objectType := v.Get("type").String()
+
+		// we skip terrain, for type consistency (it's not a RoomObject) + it's better accessed through Game.map anyway
+		if objectType == "terrain" {
 			continue
 		}
 
@@ -190,9 +192,9 @@ func unpackLookAtResult(lookAtResult js.Value) LookAtResult {
 			Type   string
 			Object RoomObject
 		}{
-			Type: t,
+			Type: objectType,
 			Object: RoomObject{
-				ref: v.Get(t),
+				ref: v.Get(objectType),
 			},
 		})
 	}
@@ -200,8 +202,8 @@ func unpackLookAtResult(lookAtResult js.Value) LookAtResult {
 }
 
 func unpackLookForAtResult(lookForAtResult js.Value) []RoomObject {
-	var length = lookForAtResult.Length()
-	var result = make([]RoomObject, length)
+	length := lookForAtResult.Length()
+	result := make([]RoomObject, length)
 	for i := 0; i < length; i++ {
 		result[i] = RoomObject{
 			ref: lookForAtResult.Index(i),

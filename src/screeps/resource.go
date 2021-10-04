@@ -13,6 +13,6 @@ func (resource Resource) Id() string {
 }
 
 func (resource Resource) ResourceType() ResourceConstant {
-	var result = resource.ref.Get("resourceType").String()
+	result := resource.ref.Get("resourceType").String()
 	return ResourceConstant(result)
 }
