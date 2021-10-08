@@ -9,12 +9,18 @@ type Attackable interface {
 }
 type Harvestable interface {
 	getRef() js.Value
-	isHarvestable() bool
+	iAmHarvestable()
 
 	Pos() RoomPosition
 	Room() Room
 	Id() string
 }
+
+type StructureRenewingPowerCreeps interface {
+	getRef() js.Value
+	iAmRenewingPowerCreeps()
+}
+
 type Transferable interface {
 	getRef() js.Value
 }

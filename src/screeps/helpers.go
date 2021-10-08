@@ -4,6 +4,12 @@ import "syscall/js"
 
 var object = js.Global().Get("Object")
 
+var isMMO = !js.Global().Get("Game").Get("cpu").Get("generatePixel").IsUndefined()
+
+func IsMMO() bool {
+	return js.Global().Get("Game").Get("cpu").Get("generatePixel").IsUndefined()
+}
+
 func packLineStyle(style LineStyle) map[string]interface{} {
 	result := map[string]interface{}{}
 	if style.Color != nil {
@@ -83,6 +89,36 @@ func packPolyStyle(style PolyStyle) map[string]interface{} {
 	}
 	return result
 }
+
+func packTextStyle(style TextStyle) map[string]interface{} {
+	result := map[string]interface{}{}
+	if style.Color != nil {
+		result["color"] = *style.Color
+	}
+	if style.Font != nil {
+		result["font"] = *style.Font
+	}
+	if style.Stroke != nil {
+		result["stroke"] = *style.Stroke
+	}
+	if style.StrokeWidth != nil {
+		result["strokeWidth"] = *style.StrokeWidth
+	}
+	if style.BackgroundColor != nil {
+		result["backgroundColor"] = *style.BackgroundColor
+	}
+	if style.BackgroundPadding != nil {
+		result["backgroundPadding"] = *style.BackgroundPadding
+	}
+	if style.Align != nil {
+		result["align"] = string(*style.Align)
+	}
+	if style.Opacity != nil {
+		result["opacity"] = *style.Opacity
+	}
+	return result
+}
+
 func packFindPathOpts(opts FindPathOpts) map[string]interface{} {
 	result := map[string]interface{}{}
 

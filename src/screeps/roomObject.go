@@ -18,7 +18,7 @@ func (roomObject RoomObject) Effects() []Effect {
 	for i := 0; i < effectCount; i++ {
 		effect := jsEffects.Index(i)
 		result[i] = Effect{
-			Effect:         EffectId(effect.Get("effect").Int()),
+			Effect:         EffectConstant(effect.Get("effect").Int()),
 			Level:          nil,
 			TicksRemaining: effect.Get("ticksRemaining").Int(),
 		}

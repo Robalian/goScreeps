@@ -68,7 +68,8 @@ func (pos RoomPosition) FindClosestByPath(findType FindRoomObjectConstant, opts 
 	if opts == nil {
 		jsOpts = js.Undefined()
 	} else {
-		jsOpts = js.ValueOf(*opts)
+		packedOpts := packFindClosestByPathOpts(*opts)
+		jsOpts = js.ValueOf(packedOpts)
 	}
 
 	findResult := pos.ref.Call("findClosestByPath", int(findType), jsOpts)

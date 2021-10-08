@@ -32,7 +32,7 @@ type FindPathOpts struct {
 	IgnoreRoads                  *bool
 	//CostCallback - I don't know how to port that
 	MaxOps          *uint
-	HeuristicWeight *float32
+	HeuristicWeight *float64
 	Serialize       *bool
 	MaxRooms        *uint
 	Range           *uint
@@ -63,7 +63,7 @@ type FindClosestByPathOpts struct {
 }
 
 type Effect struct {
-	Effect         EffectId
+	Effect         EffectConstant
 	Level          *int
 	TicksRemaining int
 }
@@ -72,4 +72,8 @@ type BodyPart struct {
 	Boost *ResourceConstant
 	Type  BodyPartConstant
 	Hits  int
+}
+
+type FindRouteOpts struct {
+	// routeCallback - I don't know how to port that
 }

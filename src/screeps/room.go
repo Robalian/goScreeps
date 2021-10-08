@@ -199,9 +199,9 @@ func (room Room) GetPositionAt(x int, y int) RoomPosition {
 	return makeRoomPosition(jsPos)
 }
 
-func (room Room) GetTerrain() RoomTerrain {
+func (room Room) GetTerrain() Terrain {
 	jsTerrain := room.ref.Call("getTerrain")
-	return RoomTerrain{
+	return Terrain{
 		ref: jsTerrain,
 	}
 }

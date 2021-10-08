@@ -4,15 +4,6 @@ import (
 	"syscall/js"
 )
 
-type Cpu struct {
-	Limit        int
-	TickLimit    int
-	Bucket       int
-	ShardLimits  map[string]int
-	Unlocked     bool
-	UnlockedTime *int
-}
-
 type GlobalControlLevel struct {
 	Level         int
 	Progress      int
@@ -48,6 +39,7 @@ func (g game) Cpu() Cpu {
 	jsCpu := g.ref.Get("cpu")
 
 	result := Cpu{
+		ref:          jsCpu,
 		Limit:        jsCpu.Get("limit").Int(),
 		TickLimit:    jsCpu.Get("tickLimit").Int(),
 		Bucket:       jsCpu.Get("bucket").Int(),
@@ -131,10 +123,78 @@ func (g game) Gpl() GlobalPowerLevel {
 	}
 }
 
-func (g game) GetObjectById(id string) RoomObject {
-	jsRoomObject := g.ref.Call("getObjectById", id)
-	return RoomObject{
-		ref: jsRoomObject,
+func (g game) Map() Map {
+	return Map{ref: g.ref.Get("map")}
+}
+
+func (g game) Market() Market {
+	return Market{ref: g.ref.Get("market")}
+}
+
+func (g game) PowerCreeps() map[string]PowerCreep {
+	jsPowerCreeps := g.ref.Get("powerCreeps")
+	result := map[string]PowerCreep{}
+
+	entries := object.Call("entries", jsPowerCreeps)
+	length := entries.Get("length").Int()
+	for i := 0; i < length; i++ {
+		entry := entries.Index(i)
+		key := entry.Index(0).String()
+		value := entry.Index(1)
+		result[key] = PowerCreep{RoomObject{
+			ref: value,
+		}}
+	}
+
+	return result
+}
+
+func (g game) Resources() map[string]int {
+	jsResources := g.ref.Get("resources")
+	result := map[string]int{}
+
+	entries := object.Call("entries", jsResources)
+	length := entries.Get("length").Int()
+	for i := 0; i < length; i++ {
+		entry := entries.Index(i)
+		key := entry.Index(0).String()
+		value := entry.Index(1).Int()
+		result[key] = value
+	}
+
+	return result
+}
+
+func (g game) Rooms() map[string]Room {
+	jsPowerCreeps := g.ref.Get("rooms")
+	result := map[string]Room{}
+
+	entries := object.Call("entries", jsPowerCreeps)
+	length := entries.Get("length").Int()
+	for i := 0; i < length; i++ {
+		entry := entries.Index(i)
+		key := entry.Index(0).String()
+		value := entry.Index(1)
+		result[key] = Room{
+			ref: value,
+		}
+	}
+
+	return result
+}
+
+type Shard struct {
+	Name string
+	Type string
+	Ptr  bool
+}
+
+func (g game) Shard() Shard {
+	jsShard := g.ref.Get("shard")
+	return Shard{
+		Name: jsShard.Get("name").String(),
+		Type: jsShard.Get("type").String(),
+		Ptr:  jsShard.Get("ptr").Bool(),
 	}
 }
 
@@ -178,6 +238,23 @@ func (g game) Structures() map[string]Structure {
 
 func (g game) Time() int {
 	return g.ref.Get("time").Int()
+}
+
+func (g game) GetObjectById(id string) RoomObject {
+	jsRoomObject := g.ref.Call("getObjectById", id)
+	return RoomObject{
+		ref: jsRoomObject,
+	}
+}
+
+func (g game) Notify(message string, groupInterval *int) {
+	var jsGroupInterval js.Value
+	if groupInterval == nil {
+		jsGroupInterval = js.Undefined()
+	} else {
+		jsGroupInterval = js.ValueOf(*groupInterval)
+	}
+	g.ref.Call("notify", message, jsGroupInterval)
 }
 
 var Game game

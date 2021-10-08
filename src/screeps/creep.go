@@ -96,8 +96,14 @@ func (creep Creep) Dismantle(target Structure) ErrorCode {
 	result := creep.ref.Call("dismantle", target.getRef()).Int()
 	return ErrorCode(result)
 }
-func (creep Creep) Drop(resourceType ResourceConstant) ErrorCode {
-	result := creep.ref.Call("drop", string(resourceType)).Int()
+func (creep Creep) Drop(resourceType ResourceConstant, amount *int) ErrorCode {
+	var jsAmount js.Value
+	if amount == nil {
+		jsAmount = js.Undefined()
+	} else {
+		jsAmount = js.ValueOf(*amount)
+	}
+	result := creep.ref.Call("drop", string(resourceType), jsAmount).Int()
 	return ErrorCode(result)
 }
 func (creep Creep) GenerateSafeMode(controller StructureController) ErrorCode {

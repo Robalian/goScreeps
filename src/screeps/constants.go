@@ -867,36 +867,60 @@ const POWER_CREEP_DELETE_COOLDOWN = 24 * 3600 * 1000
 const POWER_CREEP_MAX_LEVEL = 25
 const POWER_CREEP_LIFE_TIME = 5000
 
+type PowerClassConstant string
+
 var POWER_CLASS = struct {
-	OPERATOR string
+	OPERATOR PowerClassConstant
 }{
 	OPERATOR: "operator",
 }
 
-type EffectId int
+type PowerConstant int
+type EffectConstant int
 
 const (
-	PWR_GENERATE_OPS       EffectId = 1
-	PWR_OPERATE_SPAWN      EffectId = 2
-	PWR_OPERATE_TOWER      EffectId = 3
-	PWR_OPERATE_STORAGE    EffectId = 4
-	PWR_OPERATE_LAB        EffectId = 5
-	PWR_OPERATE_EXTENSION  EffectId = 6
-	PWR_OPERATE_OBSERVER   EffectId = 7
-	PWR_OPERATE_TERMINAL   EffectId = 8
-	PWR_DISRUPT_SPAWN      EffectId = 9
-	PWR_DISRUPT_TOWER      EffectId = 10
-	PWR_DISRUPT_SOURCE     EffectId = 11
-	PWR_SHIELD             EffectId = 12
-	PWR_REGEN_SOURCE       EffectId = 13
-	PWR_REGEN_MINERAL      EffectId = 14
-	PWR_DISRUPT_TERMINAL   EffectId = 15
-	PWR_OPERATE_POWER      EffectId = 16
-	PWR_FORTIFY            EffectId = 17
-	PWR_OPERATE_CONTROLLER EffectId = 18
-	PWR_OPERATE_FACTORY    EffectId = 19
-	EFFECT_INVULNERABILITY EffectId = 1001
-	EFFECT_COLLAPSE_TIMER  EffectId = 1002
+	EFFECT_GENERATE_OPS       EffectConstant = 1
+	EFFECT_OPERATE_SPAWN      EffectConstant = 2
+	EFFECT_OPERATE_TOWER      EffectConstant = 3
+	EFFECT_OPERATE_STORAGE    EffectConstant = 4
+	EFFECT_OPERATE_LAB        EffectConstant = 5
+	EFFECT_OPERATE_EXTENSION  EffectConstant = 6
+	EFFECT_OPERATE_OBSERVER   EffectConstant = 7
+	EFFECT_OPERATE_TERMINAL   EffectConstant = 8
+	EFFECT_DISRUPT_SPAWN      EffectConstant = 9
+	EFFECT_DISRUPT_TOWER      EffectConstant = 10
+	EFFECT_DISRUPT_SOURCE     EffectConstant = 11
+	EFFECT_SHIELD             EffectConstant = 12
+	EFFECT_REGEN_SOURCE       EffectConstant = 13
+	EFFECT_REGEN_MINERAL      EffectConstant = 14
+	EFFECT_DISRUPT_TERMINAL   EffectConstant = 15
+	EFFECT_OPERATE_POWER      EffectConstant = 16
+	EFFECT_FORTIFY            EffectConstant = 17
+	EFFECT_OPERATE_CONTROLLER EffectConstant = 18
+	EFFECT_OPERATE_FACTORY    EffectConstant = 19
+	EFFECT_INVULNERABILITY    EffectConstant = 1001
+	EFFECT_COLLAPSE_TIMER     EffectConstant = 1002
+)
+const (
+	PWR_GENERATE_OPS       PowerConstant = 1
+	PWR_OPERATE_SPAWN      PowerConstant = 2
+	PWR_OPERATE_TOWER      PowerConstant = 3
+	PWR_OPERATE_STORAGE    PowerConstant = 4
+	PWR_OPERATE_LAB        PowerConstant = 5
+	PWR_OPERATE_EXTENSION  PowerConstant = 6
+	PWR_OPERATE_OBSERVER   PowerConstant = 7
+	PWR_OPERATE_TERMINAL   PowerConstant = 8
+	PWR_DISRUPT_SPAWN      PowerConstant = 9
+	PWR_DISRUPT_TOWER      PowerConstant = 10
+	PWR_DISRUPT_SOURCE     PowerConstant = 11
+	PWR_SHIELD             PowerConstant = 12
+	PWR_REGEN_SOURCE       PowerConstant = 13
+	PWR_REGEN_MINERAL      PowerConstant = 14
+	PWR_DISRUPT_TERMINAL   PowerConstant = 15
+	PWR_OPERATE_POWER      PowerConstant = 16
+	PWR_FORTIFY            PowerConstant = 17
+	PWR_OPERATE_CONTROLLER PowerConstant = 18
+	PWR_OPERATE_FACTORY    PowerConstant = 19
 )
 
 const INVADER_CORE_HITS = 100000

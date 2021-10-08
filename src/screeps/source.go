@@ -4,9 +4,7 @@ type Source struct {
 	RoomObject
 }
 
-func (source Source) isHarvestable() bool {
-	return true
-}
+func (source Source) iAmHarvestable() {}
 
 func (source Source) Energy() int {
 	return source.ref.Get("energy").Int()

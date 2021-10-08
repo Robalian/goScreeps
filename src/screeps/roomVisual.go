@@ -3,38 +3,57 @@ package screeps
 import "syscall/js"
 
 type LineStyle struct {
-	Width     *float32
+	Width     *float64
 	Color     *string
-	Opacity   *float32
+	Opacity   *float64
 	LineStyle *string
 }
 
 type CircleStyle struct {
-	Radius      *float32
+	Radius      *float64
 	Fill        *string
-	Opacity     *float32
+	Opacity     *float64
 	Stroke      *string
-	StrokeWidth *float32
+	StrokeWidth *float64
 	LineStyle   *string
 }
 
 type RectStyle struct {
 	Fill        *string
-	Opacity     *float32
+	Opacity     *float64
 	Stroke      *string
-	StrokeWidth *float32
+	StrokeWidth *float64
 	LineStyle   *string
 }
 
 type PolyStyle struct {
 	Fill        *string
-	Opacity     *float32
+	Opacity     *float64
 	Stroke      *string
-	StrokeWidth *float32
+	StrokeWidth *float64
 	LineStyle   *string
 }
 
+type TextStyleAlign string
+
+const (
+	AlignLeft   TextStyleAlign = "left"
+	AlignCenter TextStyleAlign = "center"
+	AlignRight  TextStyleAlign = "right"
+)
+
 type PolyPoint [2]int
+
+type TextStyle struct {
+	Color             *string
+	Font              *float64 // TODO - number/string
+	Stroke            *string
+	StrokeWidth       *float64
+	BackgroundColor   *string
+	BackgroundPadding *float64
+	Align             *TextStyleAlign
+	Opacity           *float64
+}
 
 func MakeRoomVisual(roomName *string) RoomVisual {
 	var jsRoomName js.Value
@@ -69,7 +88,7 @@ func (visual RoomVisual) Line(pos1 RoomPosition, pos2 RoomPosition, style *LineS
 	return visual
 }
 
-func (visual RoomVisual) Line_XY(x1 int, y1 int, x2 int, y2 int, style *LineStyle) RoomVisual {
+func (visual RoomVisual) Line_XY(x1 float64, y1 float64, x2 float64, y2 float64, style *LineStyle) RoomVisual {
 	var jsStyle js.Value
 	if style == nil {
 		jsStyle = js.Undefined()
@@ -91,7 +110,7 @@ func (visual RoomVisual) Circle(pos RoomPosition, style *CircleStyle) RoomVisual
 	return visual
 }
 
-func (visual RoomVisual) Circle_XY(x int, y int, style *CircleStyle) RoomVisual {
+func (visual RoomVisual) Circle_XY(x float64, y float64, style *CircleStyle) RoomVisual {
 	var jsStyle js.Value
 	if style == nil {
 		jsStyle = js.Undefined()
@@ -102,7 +121,7 @@ func (visual RoomVisual) Circle_XY(x int, y int, style *CircleStyle) RoomVisual 
 	return visual
 }
 
-func (visual RoomVisual) Rect(topLeftPos RoomPosition, width int, height int, style *RectStyle) RoomVisual {
+func (visual RoomVisual) Rect(topLeftPos RoomPosition, width float64, height float64, style *RectStyle) RoomVisual {
 	var jsStyle js.Value
 	if style == nil {
 		jsStyle = js.Undefined()
@@ -113,7 +132,7 @@ func (visual RoomVisual) Rect(topLeftPos RoomPosition, width int, height int, st
 	return visual
 }
 
-func (visual RoomVisual) Rect_XY(x int, y int, width int, height int, style *RectStyle) RoomVisual {
+func (visual RoomVisual) Rect_XY(x float64, y float64, width float64, height float64, style *RectStyle) RoomVisual {
 	var jsStyle js.Value
 	if style == nil {
 		jsStyle = js.Undefined()
@@ -121,6 +140,22 @@ func (visual RoomVisual) Rect_XY(x int, y int, width int, height int, style *Rec
 		jsStyle = js.ValueOf(packRectStyle(*style))
 	}
 	visual.ref.Call("rect", x, y, width, height, jsStyle)
+	return visual
+}
+
+func (visual RoomVisual) Poly(points []RoomPosition, style *PolyStyle) RoomVisual {
+	pointsCount := len(points)
+	jsPoints := make([]interface{}, pointsCount)
+	for i := 0; i < pointsCount; i++ {
+		jsPoints[i] = points[i].ref
+	}
+	var jsStyle js.Value
+	if style == nil {
+		jsStyle = js.Undefined()
+	} else {
+		jsStyle = js.ValueOf(packPolyStyle(*style))
+	}
+	visual.ref.Call("poly", jsPoints, jsStyle)
 	return visual
 }
 
@@ -143,18 +178,48 @@ func (visual RoomVisual) Poly_XY(points []PolyPoint, style *PolyStyle) RoomVisua
 	return visual
 }
 
-func (visual RoomVisual) Poly(points []RoomPosition, style *PolyStyle) RoomVisual {
-	pointsCount := len(points)
-	jsPoints := make([]interface{}, pointsCount)
-	for i := 0; i < pointsCount; i++ {
-		jsPoints[i] = points[i].ref
-	}
+func (visual RoomVisual) Text(text string, pos RoomPosition, style *TextStyle) RoomVisual {
 	var jsStyle js.Value
 	if style == nil {
 		jsStyle = js.Undefined()
 	} else {
-		jsStyle = js.ValueOf(packPolyStyle(*style))
+		jsStyle = js.ValueOf(packTextStyle(*style))
 	}
-	visual.ref.Call("poly", jsPoints, jsStyle)
+	visual.ref.Call("text", text, pos.ref, jsStyle)
 	return visual
+}
+
+func (visual RoomVisual) Text_XY(text string, x float64, y float64, style *TextStyle) RoomVisual {
+	var jsStyle js.Value
+	if style == nil {
+		jsStyle = js.Undefined()
+	} else {
+		jsStyle = js.ValueOf(packTextStyle(*style))
+	}
+	visual.ref.Call("text", text, x, y, jsStyle)
+	return visual
+}
+
+func (visual RoomVisual) Clear() RoomVisual {
+	visual.ref.Call("clear")
+	return visual
+}
+
+func (visual RoomVisual) GetSize() int {
+	return visual.ref.Call("getSize").Int()
+}
+
+func (visual RoomVisual) Export() *string {
+	jsResult := visual.ref.Call("export")
+	if jsResult.IsUndefined() {
+		return nil
+	} else {
+		result := jsResult.String()
+		return &result
+	}
+}
+
+func (visual RoomVisual) Import(val string) RoomVisual {
+	jsResult := visual.ref.Call("import", val)
+	return RoomVisual{ref: jsResult}
 }
