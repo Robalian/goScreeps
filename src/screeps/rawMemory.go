@@ -16,6 +16,11 @@ type rawMemory struct {
 	segments map[int]string
 }
 
+var RawMemory = rawMemory{
+	ref:      js.Global().Get("RawMemory"),
+	segments: map[int]string{},
+}
+
 func (rm rawMemory) Segments() *map[int]string {
 	return &rm.segments
 }
@@ -61,11 +66,6 @@ func (rm rawMemory) SetDefaultPublicSegment(id int) {
 
 func (rm rawMemory) SetPublicSegments(ids []int) {
 	rm.ref.Call("setPublicSegments", ids)
-}
-
-var RawMemory = rawMemory{
-	ref:      js.Global().Get("RawMemory"),
-	segments: map[int]string{},
 }
 
 func loadSegments() {

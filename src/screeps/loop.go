@@ -5,7 +5,7 @@ import (
 )
 
 //export preMain
-func preMain() {
+func PreMain() {
 	Game = game{
 		ref: js.Global().Get("Game"),
 	}
@@ -13,6 +13,6 @@ func preMain() {
 }
 
 //export postMain
-func postMain() {
+func PostMain() {
 	saveSegments()
 }

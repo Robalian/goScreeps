@@ -396,7 +396,30 @@
 			};
 		}
 
-		async run(instance) {
+		init(instance) {
+			this._inst = instance;
+			this._values = [ // JS values that Go currently has references to, indexed by reference id
+				NaN,
+				0,
+				null,
+				true,
+				false,
+				global,
+				this,
+			];
+			this._goRefCounts = []; // number of references that Go has to a JS value, indexed by reference id
+			this._ids = new Map();  // mapping from JS values to reference ids
+			this._idPool = [];      // unused ids that have been garbage collected
+			this.exited = false;    // whether the Go program has exited
+
+			const mem = new DataView(this._inst.exports.memory.buffer)
+		}
+		
+		run() {
+			this._inst.exports._start();
+		}
+		
+		async defaultRun(instance) {
 			this._inst = instance;
 			this._values = [ // JS values that Go currently has references to, indexed by reference id
 				NaN,

@@ -86,27 +86,28 @@ func (spawn StructureSpawn) SpawnCreep(body []BodyPartConstant, name string, opt
 	if opts == nil {
 		jsOpts = js.Undefined()
 	} else {
-		jsOpts := js.ValueOf(map[string]interface{}{})
+		tmpOpts := map[string]interface{}{}
 		if opts.Memory != nil {
-			jsOpts.Set("memory", *opts.Memory)
+			tmpOpts["memory"] = *opts.Memory
 		}
 		if opts.EnergyStructures != nil {
 			energyStructures := make([]interface{}, len(*opts.EnergyStructures))
 			for i := 0; i < len(energyStructures); i++ {
 				energyStructures[i] = (*opts.EnergyStructures)[i].getRef()
 			}
-			jsOpts.Set("energyStructures", energyStructures)
+			tmpOpts["energyStructures"] = energyStructures
 		}
 		if opts.DryRun != nil {
-			jsOpts.Set("dryRun", *opts.DryRun)
+			tmpOpts["dryRun"] = *opts.DryRun
 		}
 		if opts.Directions != nil {
 			directions := make([]interface{}, len(*opts.Directions))
 			for i := 0; i < len(directions); i++ {
 				directions[i] = int((*opts.Directions)[i])
 			}
-			jsOpts.Set("directions", directions)
+			tmpOpts["directions"] = directions
 		}
+		jsOpts = js.ValueOf(tmpOpts)
 	}
 	result := spawn.ref.Call("spawnCreep", convertedBody, name, jsOpts).Int()
 	return ErrorCode(result)

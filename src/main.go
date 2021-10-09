@@ -6,8 +6,14 @@ import (
 	"syscall/js"
 )
 
-//export Loop
-func Loop() {
+//export gotest
+func gotest() int {
+	return 666
+}
+
+func main() {
+	PreMain()
+
 	spawn := Game.Spawns()["Spawn1"]
 	room := spawn.Room()
 
@@ -88,7 +94,43 @@ func Loop() {
 			spawn.SpawnCreep(creepBody, creepName, &SpawnOpts{Memory: &creepMemory})
 		}
 	}
-}
 
-func main() {
+	//
+	flag1, ok1 := Game.Flags()["Flag1"]
+	flag2, ok2 := Game.Flags()["Flag2"]
+	if ok1 && ok2 {
+		goals := []PathFinderGoal{
+			{
+				Pos:   flag2.Pos(),
+				Range: 0,
+			},
+		}
+		var roomCb RoomCallback = func(roomName string) *CostMatrix {
+			result := NewCostMatrix()
+
+			flags := Game.Flags()
+			for flagName, flag := range flags {
+				if flag.Color() == COLOR_RED {
+					result.Set(flag.Pos().X, flag.Pos().Y, 254)
+					Console.Log(roomName, flagName, flag.Pos().X, flag.Pos().Y, result.Get(flag.Pos().X, flag.Pos().Y))
+				}
+			}
+
+			return &result
+		}
+		opts := PathFinderOpts{
+			RoomCallback: &roomCb,
+		}
+		path := PathFinder.Search(flag1.Pos(), goals, &opts)
+		if path.Incomplete {
+			Console.Log("Flag1-Flag2 Path incomplete")
+		} else {
+			//Console.Log("Drawing path", "length =", len(path.Path))
+			visual := spawn.Room().Visual()
+			visual.Poly(path.Path, nil)
+		}
+	} else {
+		Console.Log("ok1 =", ok1, "ok2 =", ok2)
+	}
+	PostMain()
 }

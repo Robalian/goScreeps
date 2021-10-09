@@ -55,7 +55,7 @@ type TextStyle struct {
 	Opacity           *float64
 }
 
-func MakeRoomVisual(roomName *string) RoomVisual {
+func NewRoomVisual(roomName *string) RoomVisual {
 	var jsRoomName js.Value
 	if roomName == nil {
 		jsRoomName = js.Undefined()
