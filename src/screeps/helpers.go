@@ -7,7 +7,7 @@ var object = js.Global().Get("Object")
 var isMMO = !js.Global().Get("Game").Get("cpu").Get("generatePixel").IsUndefined()
 
 func IsMMO() bool {
-	return js.Global().Get("Game").Get("cpu").Get("generatePixel").IsUndefined()
+	return isMMO
 }
 
 func packLineStyle(style LineStyle) map[string]interface{} {

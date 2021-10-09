@@ -20,7 +20,7 @@ func (ism interShardMemory) GetLocal() string {
 	return ism.ref.Call("getLocal").String()
 }
 
-func (ism interShardMemory) setLocal(value string) {
+func (ism interShardMemory) SetLocal(value string) {
 	ism.ref.Call("setLocal", value)
 }
 

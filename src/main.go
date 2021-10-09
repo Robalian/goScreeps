@@ -6,11 +6,6 @@ import (
 	"syscall/js"
 )
 
-//export gotest
-func gotest() int {
-	return 666
-}
-
 func main() {
 	PreMain()
 
@@ -129,8 +124,6 @@ func main() {
 			visual := spawn.Room().Visual()
 			visual.Poly(path.Path, nil)
 		}
-	} else {
-		Console.Log("ok1 =", ok1, "ok2 =", ok2)
 	}
 	PostMain()
 }
