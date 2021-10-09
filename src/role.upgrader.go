@@ -13,15 +13,15 @@ func roleUpgrader(creep Creep) {
 	}
 
 	if creep.Memory().Get("upgrading").Truthy() {
-		var color = "#ffffff" // TODO
+		color := "#ffffff" // TODO
 		if creep.UpgradeController(*creep.Room().Controller()) == ERR_NOT_IN_RANGE {
 			creep.MoveTo(creep.Room().Controller().Pos(), &MoveToOpts{VisualizePathStyle: &PolyStyle{Stroke: &color}})
 		}
 	} else {
-		var color = "#ffaa00" // TODO
+		color := "#ffaa00" // TODO
 		source := creep.Pos().FindClosestByPath(FIND_SOURCES_ACTIVE, nil)
 		if source != nil {
-			if creep.Harvest(Source{RoomObject: *source}) == ERR_NOT_IN_RANGE { // TODO
+			if creep.Harvest(source.AsSource()) == ERR_NOT_IN_RANGE {
 				creep.MoveTo(source.Pos(), &MoveToOpts{VisualizePathStyle: &PolyStyle{Stroke: &color}})
 			}
 		}

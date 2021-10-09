@@ -32,9 +32,9 @@ func (room Room) EnergyCapacityAvailable() int {
 	return room.ref.Get("energyCapacityAvailable").Int()
 }
 
-// TODO
-//func (room Room) Memory() ??? {
-//}
+func (room Room) Memory() js.Value {
+	return room.ref.Get("memory")
+}
 
 func (room Room) Name() string {
 	return room.ref.Get("name").String()

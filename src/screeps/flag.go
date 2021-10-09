@@ -1,5 +1,7 @@
 package screeps
 
+import "syscall/js"
+
 type Flag struct {
 	RoomObject
 }
@@ -9,8 +11,8 @@ func (flag Flag) Color() ColorConstant {
 	return ColorConstant(result)
 }
 
-func (flag Flag) Memory() {
-	// TODO
+func (flag Flag) Memory() js.Value {
+	return flag.ref.Get("memory")
 }
 
 func (flag Flag) Name() string {

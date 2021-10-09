@@ -36,9 +36,10 @@ type StructureSpawn struct {
 	OwnedStructure
 }
 
-// TODO
-//func (spawn StructureSpawn) Memory() ??? {
-//}
+func (spawn StructureSpawn) Memory() js.Value {
+	return spawn.ref.Get("memory")
+}
+
 func (spawn StructureSpawn) Name() string {
 	return spawn.ref.Get("name").String()
 }

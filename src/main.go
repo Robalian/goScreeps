@@ -15,9 +15,10 @@ func main() {
 	myStructures := room.Find(FIND_MY_STRUCTURES)
 	var tower *StructureTower
 	for _, v := range myStructures {
-		structure := Structure{RoomObject: v} // TODO
+		structure := v.AsStructure()
 		if structure.StructureType() == STRUCTURE_TOWER {
-			tower = &StructureTower{OwnedStructure: OwnedStructure{Structure: structure}} // TODO
+			asTower := structure.AsStructureTower() // TODO
+			tower = &asTower
 			break
 		}
 	}
@@ -25,7 +26,7 @@ func main() {
 		structures := tower.Room().Find(FIND_STRUCTURES)
 		damagedStructures := []RoomObject{} // TODO
 		for _, v := range structures {
-			structure := Structure{RoomObject: v} // TODO
+			structure := v.AsStructure()
 			if structure.Hits() != nil && *structure.Hits() < *structure.HitsMax() {
 				damagedStructures = append(damagedStructures, v)
 			}
@@ -33,7 +34,7 @@ func main() {
 
 		closestDamagedStructure := tower.Pos().FindClosestByRange_Objects(damagedStructures)
 		if closestDamagedStructure != nil {
-			tower.Repair(Structure{RoomObject: *closestDamagedStructure}) // TODO
+			tower.Repair(closestDamagedStructure.AsStructure())
 		}
 
 		closestHostile := tower.Pos().FindClosestByRange(FIND_HOSTILE_CREEPS)
