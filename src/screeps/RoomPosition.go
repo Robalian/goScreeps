@@ -19,6 +19,12 @@ func makeRoomPosition(pos js.Value) RoomPosition {
 	}
 }
 
+var roomPositionConstructor = js.Global().Get("RoomPosition")
+
+func NewRoomPosition(x int, y int, roomName string) RoomPosition {
+	return makeRoomPosition(roomPositionConstructor.New(x, y, roomName))
+}
+
 type RoomPosition struct {
 	ref      js.Value
 	X        int

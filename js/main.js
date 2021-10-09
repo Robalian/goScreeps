@@ -14,10 +14,7 @@ function loadWasm() {
 
 function jsRoomCallback(roomName) {
 	global.jsRoomCallbackArgument = roomName
-	let result = go._inst.exports.goRoomCallback(roomName)
-	
-	console.log(global.goRoomCallbackResult)
-	
+	go._inst.exports.goRoomCallback(roomName)
 	return global.goRoomCallbackResult
 }
 global.jsRoomCallback = jsRoomCallback

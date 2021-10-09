@@ -2,9 +2,13 @@ package screeps
 
 import "syscall/js"
 
+var creepConstructor = js.Global().Get("Creep")
+
 type Creep struct {
 	RoomObject
 }
+
+func (creep Creep) iAmAnyCreep() {}
 
 func (creep Creep) Body() []BodyPart {
 	body := creep.ref.Get("body")

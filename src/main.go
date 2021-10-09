@@ -104,10 +104,9 @@ func main() {
 			result := NewCostMatrix()
 
 			flags := Game.Flags()
-			for flagName, flag := range flags {
+			for _, flag := range flags {
 				if flag.Color() == COLOR_RED {
 					result.Set(flag.Pos().X, flag.Pos().Y, 254)
-					Console.Log(roomName, flagName, flag.Pos().X, flag.Pos().Y, result.Get(flag.Pos().X, flag.Pos().Y))
 				}
 			}
 

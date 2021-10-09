@@ -22,6 +22,8 @@ type PowerCreep struct {
 	RoomObject
 }
 
+func (powerCreep PowerCreep) iAmAnyCreep() {}
+
 func (powerCreep PowerCreep) ClassName() PowerClassConstant {
 	return PowerClassConstant(powerCreep.ref.Get("className").String())
 }

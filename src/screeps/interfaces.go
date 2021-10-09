@@ -31,9 +31,9 @@ type Withdrawable interface {
 
 type AnyCreep interface {
 	getRef() js.Value
+	iAmAnyCreep()
 
-	Hits()
-	HitsMax()
+	HitsMax() int
 	Id() string
 }
 
