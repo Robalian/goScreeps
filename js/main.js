@@ -13,11 +13,31 @@ function loadWasm() {
 }
 
 function jsRoomCallback(roomName) {
-	global.jsRoomCallbackArgument = roomName
-	go._inst.exports.goRoomCallback(roomName)
-	return global.goRoomCallbackResult
+	global.roomCallbackArgument = roomName
+	go._inst.exports.goRoomCallback()
+	return global.roomCallbackResult
 }
 global.jsRoomCallback = jsRoomCallback
+
+function jsOrderFilter(order) {
+	global.orderFilterArgument = order
+	return go._inst.exports.goOrderFilter()
+}
+global.jsOrderFilter = jsOrderFilter
+
+function jsRouteCallback(roomName, fromRoomName) {
+	global.routeCallbackArgument1 = roomName
+	global.routeCallbackArgument2 = fromRoomName
+	return go._inst.exports.goRouteCallback()
+}
+global.jsRouteCallback = jsRouteCallback
+
+function jsCostCallback(roomName, costMatrix) {
+	global.costCallbackArgument1 = roomName
+	global.costCallbackArgument2 = costMatrix
+	go._inst.exports.goCostCallback()
+}
+global.jsCostCallback = jsCostCallback
 
 let globalResetTick = Game.time;
 module.exports.loop = () => {

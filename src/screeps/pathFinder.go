@@ -99,5 +99,6 @@ func (pf pathFinder) Search(origin RoomPosition, goal []PathFinderGoal, opts *Pa
 		Cost:       jsResult.Get("cost").Int(),
 		Incomplete: jsResult.Get("incomplete").Bool(),
 	}
+
 	return result
 }

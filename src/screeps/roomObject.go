@@ -2,6 +2,12 @@ package screeps
 
 import "syscall/js"
 
+type Effect struct {
+	Effect         EffectConstant
+	Level          *int
+	TicksRemaining int
+}
+
 type RoomObject struct {
 	ref js.Value
 }

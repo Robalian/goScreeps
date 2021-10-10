@@ -17,7 +17,7 @@ func roleBuilder(creep Creep) {
 		if closestConstructionSite != nil {
 			constructionSite := closestConstructionSite.AsConstructionSite()
 			if creep.Build(constructionSite) == ERR_NOT_IN_RANGE {
-				color := "#ffffff" // TODO
+				color := "#ffffff"
 				creep.MoveTo(constructionSite.Pos(), &MoveToOpts{VisualizePathStyle: &PolyStyle{Stroke: &color}})
 			}
 		}
@@ -25,7 +25,7 @@ func roleBuilder(creep Creep) {
 		source := creep.Pos().FindClosestByPath(FIND_SOURCES_ACTIVE, nil)
 		if source != nil {
 			if creep.Harvest(source.AsSource()) == ERR_NOT_IN_RANGE {
-				color := "#ffaa00" // TODO
+				color := "#ffaa00"
 				creep.MoveTo(source.Pos(), &MoveToOpts{VisualizePathStyle: &PolyStyle{Stroke: &color}})
 			}
 		}

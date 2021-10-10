@@ -2,6 +2,19 @@ package screeps
 
 import "syscall/js"
 
+type FindClosestByPathAlgorithm string
+
+const (
+	ALGORITHM_ASTAR    FindClosestByPathAlgorithm = "astar"
+	ALGORITHM_DIJKSTRA FindClosestByPathAlgorithm = "dijkstra"
+)
+
+type FindClosestByPathOpts struct {
+	FindPathOpts
+	//Filter - Won't do
+	Algorithm *FindClosestByPathAlgorithm
+}
+
 func packFindClosestByPathOpts(opts FindClosestByPathOpts) map[string]interface{} {
 	result := packFindPathOpts(opts.FindPathOpts)
 	if opts.Algorithm != nil {
@@ -150,7 +163,7 @@ func (pos RoomPosition) FindClosestByPath_Positions(positions []RoomPosition, op
 	}
 }
 
-func (pos RoomPosition) FindClosestByRange(findType FindRoomObjectConstant) *RoomObject {
+func (pos RoomPosition) FindClosestByRange_ObjectConstant(findType FindRoomObjectConstant) *RoomObject {
 	findResult := pos.ref.Call("findClosestByRange", int(findType))
 	if findResult.IsNull() {
 		return nil
@@ -161,7 +174,7 @@ func (pos RoomPosition) FindClosestByRange(findType FindRoomObjectConstant) *Roo
 	}
 }
 
-func (pos RoomPosition) FindClosestByRange_Exit(findType FindExitConstant) *RoomPosition {
+func (pos RoomPosition) FindClosestByRange_ExitConstant(findType FindExitConstant) *RoomPosition {
 	findResult := pos.ref.Call("findClosestByRange", int(findType))
 	if findResult.IsNull() {
 		return nil
@@ -171,7 +184,7 @@ func (pos RoomPosition) FindClosestByRange_Exit(findType FindExitConstant) *Room
 	}
 }
 
-func (pos RoomPosition) FindClosestByRange_Objects(objects []RoomObject) *RoomObject {
+func (pos RoomPosition) FindClosestByRange_RoomObjects(objects []RoomObject) *RoomObject {
 	jsObjects := make([]interface{}, len(objects))
 	for i, v := range objects {
 		jsObjects[i] = v.ref
@@ -202,7 +215,7 @@ func (pos RoomPosition) FindClosestByRange_Positions(positions []RoomPosition) *
 	}
 }
 
-func (pos RoomPosition) FindInRange(findType FindRoomObjectConstant, distance int) []RoomObject {
+func (pos RoomPosition) FindInRange_ObjectConstant(findType FindRoomObjectConstant, distance int) []RoomObject {
 	findResult := pos.ref.Call("findInRange", int(findType), distance)
 	length := findResult.Length()
 	result := make([]RoomObject, length)
@@ -212,7 +225,7 @@ func (pos RoomPosition) FindInRange(findType FindRoomObjectConstant, distance in
 	return result
 }
 
-func (pos RoomPosition) FindInRange_Exit(findType FindExitConstant, distance int) []RoomPosition {
+func (pos RoomPosition) FindInRange_ExitConstant(findType FindExitConstant, distance int) []RoomPosition {
 	findResult := pos.ref.Call("findInRange", int(findType), distance)
 	length := findResult.Length()
 	result := make([]RoomPosition, length)
@@ -222,7 +235,7 @@ func (pos RoomPosition) FindInRange_Exit(findType FindExitConstant, distance int
 	return result
 }
 
-func (pos RoomPosition) FindInRange_Objects(objects []RoomObject, distance int) []RoomObject {
+func (pos RoomPosition) FindInRange_RoomObjects(objects []RoomObject, distance int) []RoomObject {
 	jsObjects := make([]interface{}, len(objects))
 	for i, v := range objects {
 		jsObjects[i] = v.ref
@@ -322,6 +335,14 @@ func (pos RoomPosition) Look() LookAtResult {
 }
 
 func (pos RoomPosition) LookFor() []RoomObject {
-	lookAtResult := pos.ref.Call("lookFor")
-	return unpackLookForAtResult(lookAtResult)
+	jsResult := pos.ref.Call("lookFor")
+
+	length := jsResult.Length()
+	result := make([]RoomObject, length)
+	for i := 0; i < length; i++ {
+		result[i] = RoomObject{
+			ref: jsResult.Index(i),
+		}
+	}
+	return result
 }

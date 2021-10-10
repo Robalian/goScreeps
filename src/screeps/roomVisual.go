@@ -9,6 +9,23 @@ type LineStyle struct {
 	LineStyle *string
 }
 
+func packLineStyle(style LineStyle) map[string]interface{} {
+	result := map[string]interface{}{}
+	if style.Color != nil {
+		result["color"] = *style.Color
+	}
+	if style.Width != nil {
+		result["width"] = *style.Width
+	}
+	if style.Opacity != nil {
+		result["opacity"] = *style.Opacity
+	}
+	if style.LineStyle != nil {
+		result["lineStyle"] = *style.LineStyle
+	}
+	return result
+}
+
 type CircleStyle struct {
 	Radius      *float64
 	Fill        *string
@@ -16,6 +33,29 @@ type CircleStyle struct {
 	Stroke      *string
 	StrokeWidth *float64
 	LineStyle   *string
+}
+
+func packCircleStyle(style CircleStyle) map[string]interface{} {
+	result := map[string]interface{}{}
+	if style.Radius != nil {
+		result["radius"] = *style.Radius
+	}
+	if style.Fill != nil {
+		result["fill"] = *style.Fill
+	}
+	if style.Opacity != nil {
+		result["opacity"] = *style.Opacity
+	}
+	if style.Stroke != nil {
+		result["stroke"] = *style.Stroke
+	}
+	if style.StrokeWidth != nil {
+		result["strokeWidth"] = *style.StrokeWidth
+	}
+	if style.LineStyle != nil {
+		result["lineStyle"] = *style.LineStyle
+	}
+	return result
 }
 
 type RectStyle struct {
@@ -26,12 +66,52 @@ type RectStyle struct {
 	LineStyle   *string
 }
 
+func packRectStyle(style RectStyle) map[string]interface{} {
+	result := map[string]interface{}{}
+	if style.Fill != nil {
+		result["fill"] = *style.Fill
+	}
+	if style.Opacity != nil {
+		result["opacity"] = *style.Opacity
+	}
+	if style.Stroke != nil {
+		result["stroke"] = *style.Stroke
+	}
+	if style.StrokeWidth != nil {
+		result["strokeWidth"] = *style.StrokeWidth
+	}
+	if style.LineStyle != nil {
+		result["lineStyle"] = *style.LineStyle
+	}
+	return result
+}
+
 type PolyStyle struct {
 	Fill        *string
 	Opacity     *float64
 	Stroke      *string
 	StrokeWidth *float64
 	LineStyle   *string
+}
+
+func packPolyStyle(style PolyStyle) map[string]interface{} {
+	result := map[string]interface{}{}
+	if style.Fill != nil {
+		result["fill"] = *style.Fill
+	}
+	if style.LineStyle != nil {
+		result["lineStyle"] = *style.LineStyle
+	}
+	if style.Opacity != nil {
+		result["opacity"] = *style.Opacity
+	}
+	if style.Stroke != nil {
+		result["stroke"] = *style.Stroke
+	}
+	if style.StrokeWidth != nil {
+		result["strokeWidth"] = *style.StrokeWidth
+	}
+	return result
 }
 
 type TextStyleAlign string
@@ -53,6 +133,35 @@ type TextStyle struct {
 	BackgroundPadding *float64
 	Align             *TextStyleAlign
 	Opacity           *float64
+}
+
+func packTextStyle(style TextStyle) map[string]interface{} {
+	result := map[string]interface{}{}
+	if style.Color != nil {
+		result["color"] = *style.Color
+	}
+	if style.Font != nil {
+		result["font"] = *style.Font
+	}
+	if style.Stroke != nil {
+		result["stroke"] = *style.Stroke
+	}
+	if style.StrokeWidth != nil {
+		result["strokeWidth"] = *style.StrokeWidth
+	}
+	if style.BackgroundColor != nil {
+		result["backgroundColor"] = *style.BackgroundColor
+	}
+	if style.BackgroundPadding != nil {
+		result["backgroundPadding"] = *style.BackgroundPadding
+	}
+	if style.Align != nil {
+		result["align"] = string(*style.Align)
+	}
+	if style.Opacity != nil {
+		result["opacity"] = *style.Opacity
+	}
+	return result
 }
 
 func NewRoomVisual(roomName *string) RoomVisual {

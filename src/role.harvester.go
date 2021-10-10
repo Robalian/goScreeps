@@ -7,7 +7,7 @@ func roleHarvester(creep Creep) {
 		source := creep.Pos().FindClosestByPath(FIND_SOURCES_ACTIVE, nil)
 		if source != nil {
 			if creep.Harvest(source.AsSource()) == ERR_NOT_IN_RANGE {
-				color := "#ffaa00" // TODO
+				color := "#ffaa00"
 				creep.MoveTo(source.Pos(), &MoveToOpts{VisualizePathStyle: &PolyStyle{Stroke: &color}})
 			}
 		}
@@ -27,7 +27,7 @@ func roleHarvester(creep Creep) {
 		}
 
 		if len(validTargets) > 0 {
-			color := "#ffffff" // TODO
+			color := "#ffffff"
 			if creep.Transfer(validTargets[0], RESOURCE_ENERGY, nil) == ERR_NOT_IN_RANGE {
 				creep.MoveTo(validTargets[0].Pos(), &MoveToOpts{VisualizePathStyle: &PolyStyle{Stroke: &color}})
 			}

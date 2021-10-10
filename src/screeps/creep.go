@@ -2,6 +2,40 @@ package screeps
 
 import "syscall/js"
 
+type BodyPart struct {
+	Boost *ResourceConstant
+	Type  BodyPartConstant
+	Hits  int
+}
+
+type MoveToOpts struct {
+	FindPathOpts
+
+	ReusePath          *uint
+	SerializeMemory    *bool
+	NoPathFinding      *bool
+	VisualizePathStyle *PolyStyle
+}
+
+func packMoveToOpts(opts MoveToOpts) map[string]interface{} {
+	result := packFindPathOpts(opts.FindPathOpts)
+
+	if opts.NoPathFinding != nil {
+		result["noPathFinding"] = *opts.NoPathFinding
+	}
+	if opts.ReusePath != nil {
+		result["reusePath"] = *opts.ReusePath
+	}
+	if opts.SerializeMemory != nil {
+		result["serializeMemory"] = *opts.SerializeMemory
+	}
+	if opts.VisualizePathStyle != nil {
+		result["visualizePathStyle"] = packPolyStyle(*opts.VisualizePathStyle)
+	}
+
+	return result
+}
+
 var creepConstructor = js.Global().Get("Creep")
 
 type Creep struct {

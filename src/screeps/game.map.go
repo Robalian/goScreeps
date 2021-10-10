@@ -2,6 +2,16 @@ package screeps
 
 import "syscall/js"
 
+type RouteCallback func(roomName string, fromRoomName string) float64
+type FindRouteOpts struct {
+	routeCallback RouteCallback
+}
+
+type FindRouteResult []struct {
+	exit FindExitConstant
+	room string
+}
+
 type Map struct {
 	ref js.Value
 }
@@ -30,7 +40,15 @@ func (m Map) DescribeExits(roomName string) map[DirectionConstant]string {
 }
 
 func (m Map) FindExit(fromRoom string, toRoom string, opts *FindRouteOpts) (*FindExitConstant, ErrorCode) {
-	jsOpts := js.Undefined() // TODO
+	var jsOpts js.Value
+	if opts == nil {
+		jsOpts = js.Undefined()
+	} else {
+		currentRouteCallback = &opts.routeCallback
+		jsOpts = js.ValueOf(map[string]interface{}{
+			"routeCallback": js.Global().Get("jsRouteCallback"),
+		})
+	}
 	callResult := m.ref.Call("findExit", fromRoom, toRoom, jsOpts).Int()
 	if callResult < 0 {
 		return nil, ErrorCode(callResult)
@@ -40,13 +58,17 @@ func (m Map) FindExit(fromRoom string, toRoom string, opts *FindRouteOpts) (*Fin
 	}
 }
 
-type FindRouteResult []struct {
-	exit FindExitConstant
-	room string
-}
-
 func (m Map) FindRoute(fromRoom string, toRoom string, opts *FindRouteOpts) (*FindRouteResult, ErrorCode) {
-	jsOpts := js.Undefined() // TODO
+	var jsOpts js.Value
+	if opts == nil {
+		jsOpts = js.Undefined()
+	} else {
+		currentRouteCallback = &opts.routeCallback
+		jsOpts = js.ValueOf(map[string]interface{}{
+			"routeCallback": js.Global().Get("jsRouteCallback"),
+		})
+	}
+
 	callResult := m.ref.Call("findExit", fromRoom, toRoom, jsOpts)
 	if callResult.Type() == js.TypeNumber {
 		return nil, ErrorCode(callResult.Int())

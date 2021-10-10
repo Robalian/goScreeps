@@ -246,34 +246,49 @@ func (market Market) ExtendOrder(orderId string, addAmount int) ErrorCode {
 	return ErrorCode(result)
 }
 
-func (market Market) GetAllOrders() []Order { // TODO - filter
-	jsOrders := market.ref.Get("orders")
+type OrderFilter func(order Order) bool
+
+func unpackOrder(jsOrder js.Value) Order {
+	order := Order{
+		Id:               jsOrder.Get("id").String(),
+		Created:          jsOrder.Get("created").Int(),
+		CreatedTimestamp: nil,
+		Active:           nil,
+		Type:             jsOrder.Get("type").String(),
+		ResourceType:     ResourceConstant(jsOrder.Get("resourceType").String()),
+		RoomName:         nil,
+		Amount:           jsOrder.Get("amount").Int(),
+		RemainingAmount:  jsOrder.Get("remainingAmount").Int(),
+		TotalAmount:      nil,
+		Price:            jsOrder.Get("price").Float(),
+	}
+
+	// roomName
+	roomName := jsOrder.Get("roomName")
+	if !roomName.IsUndefined() {
+		roomNameStr := roomName.String()
+		order.RoomName = &roomNameStr
+	}
+
+	return order
+}
+
+func (market Market) GetAllOrders(filter *OrderFilter) []Order {
+	var jsFilter js.Value
+	if filter == nil {
+		jsFilter = js.Undefined()
+	} else {
+		currentOrderFilter = filter
+		jsFilter = js.Global().Get("jsOrderFilter")
+	}
+
+	jsOrders := market.ref.Call("getAllOrders", jsFilter)
 	length := jsOrders.Length()
 	result := make([]Order, length)
 
 	for i := 0; i < length; i++ {
 		jsOrder := jsOrders.Index(i)
-		order := Order{
-			Id:               jsOrder.Get("id").String(),
-			Created:          jsOrder.Get("created").Int(),
-			CreatedTimestamp: nil,
-			Active:           nil,
-			Type:             jsOrder.Get("type").String(),
-			ResourceType:     ResourceConstant(jsOrder.Get("resourceType").String()),
-			RoomName:         nil,
-			Amount:           jsOrder.Get("amount").Int(),
-			RemainingAmount:  jsOrder.Get("remainingAmount").Int(),
-			TotalAmount:      nil,
-			Price:            jsOrder.Get("price").Float(),
-		}
-
-		// roomName
-		roomName := jsOrder.Get("roomName")
-		if !roomName.IsUndefined() {
-			roomNameStr := roomName.String()
-			order.RoomName = &roomNameStr
-		}
-
+		order := unpackOrder(jsOrder)
 		result[i] = order
 	}
 
