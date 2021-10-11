@@ -7,8 +7,8 @@ type Cpu struct {
 	Limit        int
 	TickLimit    int
 	Bucket       int
-	ShardLimits  map[string]int
-	Unlocked     bool
+	ShardLimits  *map[string]int
+	Unlocked     *bool // doesn't exist on private servers
 	UnlockedTime *int
 }
 

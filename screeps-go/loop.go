@@ -1,14 +1,8 @@
 package screeps
 
-import (
-	"syscall/js"
-)
-
 //export preMain
 func PreMain() {
-	Game = game{
-		ref: js.Global().Get("Game"),
-	}
+	updateGame()
 	loadSegments()
 }
 

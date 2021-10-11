@@ -1,0 +1,59 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "clearDist",
+            "type": "shell",
+            "presentation": {
+                "reveal": "always",
+                "showReuseMessage": false
+            },
+            "group": "build",
+            "problemMatcher": [],
+            "command": "Remove-item",
+            "args": [ "-recurse", "-ErrorAction", "Ignore", "./dist/*" ]
+        },
+        {
+            "label": "buildWasm",
+            "dependsOn": ["clearDist"],
+            "presentation": {
+                "reveal": "silent",
+                "showReuseMessage": false
+            },
+            "group": "build",
+            "problemMatcher": [ "$go" ],
+            "command": "tinygo",
+            "args": [ "build", "-o", "dist/screepsgo.wasm", "-target", "wasm", "./src/..." ]
+        },
+        {
+            "label": "copyMainJs",
+            "dependsOn": ["buildWasm"],
+            "type": "shell",
+            "presentation": {
+                "reveal": "silent",
+                "showReuseMessage": false
+            },
+            "group": "build",
+            "problemMatcher": [],
+            "command": "cp",
+            "args": [ "./js/main.js", "./dist/main.js" ]
+        },
+        {
+            "label": "build",
+            "dependsOn": ["copyMainJs"],
+            "presentation": {
+                "reveal": "silent",
+                "echo": false,
+                "showReuseMessage": false
+            },
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "type": "shell",
+            "command": "echo Finished ",
+        }
+
+    ]
+}

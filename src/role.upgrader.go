@@ -1,6 +1,6 @@
 package main
 
-import . "screepsgo/src/screeps"
+import . "screepsgo/screeps-go"
 
 func roleUpgrader(creep Creep) {
 	if creep.Memory().Get("upgrading").Truthy() && *creep.Store().GetUsedCapacity(&RESOURCE_ENERGY) == 0 {

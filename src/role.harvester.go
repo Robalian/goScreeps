@@ -1,6 +1,6 @@
 package main
 
-import . "screepsgo/src/screeps"
+import . "screepsgo/screeps-go"
 
 func roleHarvester(creep Creep) {
 	if *creep.Store().GetFreeCapacity(nil) > 0 {

@@ -1,7 +1,7 @@
 package main
 
 import (
-	. "screepsgo/src/screeps"
+	. "screepsgo/screeps-go"
 	"strconv"
 	"syscall/js"
 )
@@ -32,12 +32,12 @@ func main() {
 			}
 		}
 
-		closestDamagedStructure := tower.Pos().FindClosestByRange_Objects(damagedStructures)
+		closestDamagedStructure := tower.Pos().FindClosestByRange_RoomObjects(damagedStructures)
 		if closestDamagedStructure != nil {
 			tower.Repair(closestDamagedStructure.AsStructure())
 		}
 
-		closestHostile := tower.Pos().FindClosestByRange(FIND_HOSTILE_CREEPS)
+		closestHostile := tower.Pos().FindClosestByRange_ObjectConstant(FIND_HOSTILE_CREEPS)
 		if closestHostile != nil {
 			tower.Attack(Creep{RoomObject: *closestHostile})
 		}
@@ -125,5 +125,8 @@ func main() {
 			visual.Poly(path.Path, nil)
 		}
 	}
+
+	setGrafanaStats()
+
 	PostMain()
 }

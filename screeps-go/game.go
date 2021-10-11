@@ -43,26 +43,38 @@ func (g game) Cpu() Cpu {
 		Limit:        jsCpu.Get("limit").Int(),
 		TickLimit:    jsCpu.Get("tickLimit").Int(),
 		Bucket:       jsCpu.Get("bucket").Int(),
-		ShardLimits:  map[string]int{},
-		Unlocked:     jsCpu.Get("unlocked").Bool(),
+		ShardLimits:  nil,
+		Unlocked:     nil,
 		UnlockedTime: nil,
 	}
 
 	// shard limits
-	shardLimitsEntries := object.Call("entries", jsCpu.Get("shardLimits"))
-	shardLimitsLength := shardLimitsEntries.Get("length").Int()
-	for i := 0; i < shardLimitsLength; i++ {
-		entry := shardLimitsEntries.Index(i)
-		key := entry.Index(0).String()
-		value := entry.Index(1).Int()
-		result.ShardLimits[key] = value
+	jsShardLimits := jsCpu.Get("shardLimits")
+	if !jsShardLimits.IsUndefined() {
+		shardLimits := map[string]int{}
+		shardLimitsEntries := object.Call("entries", jsCpu.Get("shardLimits"))
+		shardLimitsLength := shardLimitsEntries.Get("length").Int()
+		for i := 0; i < shardLimitsLength; i++ {
+			entry := shardLimitsEntries.Index(i)
+			key := entry.Index(0).String()
+			value := entry.Index(1).Int()
+			shardLimits[key] = value
+		}
+		result.ShardLimits = &shardLimits
+	}
+
+	// unlocked
+	jsUnlocked := jsCpu.Get("unlocked")
+	if !jsUnlocked.IsUndefined() {
+		unlocked := jsUnlocked.Bool()
+		result.Unlocked = &unlocked
 	}
 
 	// unlocked time
 	jsUnlockedTime := jsCpu.Get("unlockedTime")
 	if !jsUnlockedTime.IsUndefined() {
-		result.UnlockedTime = new(int)
-		*result.UnlockedTime = jsUnlockedTime.Int()
+		unlockedTime := jsUnlockedTime.Int()
+		result.UnlockedTime = &unlockedTime
 	}
 
 	//
@@ -257,4 +269,12 @@ func (g game) Notify(message string, groupInterval *int) {
 	g.ref.Call("notify", message, jsGroupInterval)
 }
 
-var Game game
+var Game = game{
+	ref: js.Global().Get("Game"),
+}
+
+func updateGame() {
+	Game = game{
+		ref: js.Global().Get("Game"),
+	}
+}
