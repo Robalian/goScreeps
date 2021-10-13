@@ -1,12 +1,11 @@
 package screeps
 
-//export preMain
 func PreMain() {
 	updateGame()
+	updateRawMemory()
 	loadSegments()
 }
 
-//export postMain
 func PostMain() {
 	saveSegments()
 }

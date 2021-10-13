@@ -16,11 +16,6 @@ type rawMemory struct {
 	segments map[int]string
 }
 
-var RawMemory = rawMemory{
-	ref:      js.Global().Get("RawMemory"),
-	segments: map[int]string{},
-}
-
 func (rm rawMemory) Segments() *map[int]string {
 	return &rm.segments
 }
@@ -90,4 +85,13 @@ func saveSegments() {
 	for k := range RawMemory.segments {
 		jsSegments.Set(strconv.Itoa(k), RawMemory.segments[k])
 	}
+}
+
+var RawMemory = rawMemory{
+	ref:      js.Global().Get("RawMemory"),
+	segments: map[int]string{},
+}
+
+func updateRawMemory() {
+	RawMemory.ref = js.Global().Get("RawMemory")
 }

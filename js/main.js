@@ -351,7 +351,7 @@ global.Go = class {
 			env: {
 				// func ticks() float64
 				"runtime.ticks": () => {
-					return timeOrigin;
+					return Date.now() - timeOrigin
 				},
 
 				// func sleepTicks(timeout float64)
@@ -517,7 +517,7 @@ global.Go = class {
 		};
 	}
 
-	init(instance) {
+	run(instance) {
 		this._inst = instance;
 		this._values = [ // JS values that Go currently has references to, indexed by reference id
 			NaN,
@@ -532,14 +532,25 @@ global.Go = class {
 		this._ids = new Map();  // mapping from JS values to reference ids
 		this._idPool = [];      // unused ids that have been garbage collected
 		this.exited = false;    // whether the Go program has exited
+		this.started = false
 
-		const mem = new DataView(this._inst.exports.memory.buffer)
-	}
-	
-	run() {
 		this._inst.exports._start();
 	}
 	
+	_resume() {
+		this._inst.exports.resume();
+	}
+
+	_makeFuncWrapper(id) {
+		const go = this;
+		return function () {
+			const event = { id: id, this: this, args: arguments };
+			go._pendingEvent = event;
+			go._resume();
+			return event.result;
+		};
+	}
+
 	async defaultRun(instance) {
 		this._inst = instance;
 		this._values = [ // JS values that Go currently has references to, indexed by reference id
@@ -586,7 +597,7 @@ function loadWasm() {
 	
 	let localGo = new Go();
 	let wasmInstance = new WebAssembly.Instance(wasmModule, localGo.importObject)
-    localGo.init(wasmInstance);
+	localGo.run(wasmInstance)
 	//localGo.defaultRun(wasmInstance)
 	go = localGo;
 	global.go = go
@@ -625,6 +636,6 @@ module.exports.loop = () => {
 		loadWasm();
 	if (!go)
 		return;
-		
-	go.run()
+	
+	runLoop();
 }
