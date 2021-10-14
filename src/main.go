@@ -18,22 +18,7 @@ func main() {
 		<-channel
 		PreMain()
 
-		for _, creep := range Game.Creeps() {
-			creepRole := creep.Memory().Get("role")
-			if creepRole.IsUndefined() {
-				continue
-			}
-
-			if creep.Memory().Get("role").String() == "harvester" {
-				roleHarvester(creep)
-			}
-			if creep.Memory().Get("role").String() == "upgrader" {
-				roleUpgrader(creep)
-			}
-			if creep.Memory().Get("role").String() == "builder" {
-				roleBuilder(creep)
-			}
-		}
+		runCreeps()
 
 		//
 		spawnCreeps()

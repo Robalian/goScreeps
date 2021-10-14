@@ -630,7 +630,6 @@ function jsCostCallback(roomName, costMatrix) {
 }
 global.jsCostCallback = jsCostCallback
 
-let globalResetTick = Game.time;
 module.exports.loop = () => {
 	if (!go && Game.cpu.bucket === 10000)
 		loadWasm();

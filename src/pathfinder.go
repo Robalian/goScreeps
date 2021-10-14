@@ -31,18 +31,21 @@ func pathfinderExample() {
 		if path.Incomplete {
 			Console.Log("Flag1-Flag2 Path incomplete")
 		} else {
-			stepsByRoom := map[string][]RoomPosition{}
-			for _, step := range path.Path {
-				_, ok := stepsByRoom[step.RoomName]
-				if !ok {
-					stepsByRoom[step.RoomName] = []RoomPosition{}
+			stepsInCurrentRoom := []RoomPosition{}
+			for i, step := range path.Path {
+				if i > 0 && step.RoomName != path.Path[i-1].RoomName {
+					roomName := stepsInCurrentRoom[0].RoomName
+					visual := NewRoomVisual(&roomName)
+					visual.Poly(stepsInCurrentRoom, nil)
+					stepsInCurrentRoom = []RoomPosition{}
 				}
-				stepsByRoom[step.RoomName] = append(stepsByRoom[step.RoomName], step)
-			}
 
-			for roomName, pathInRoom := range stepsByRoom {
+				stepsInCurrentRoom = append(stepsInCurrentRoom, step)
+			}
+			if len(stepsInCurrentRoom) > 0 {
+				roomName := stepsInCurrentRoom[0].RoomName
 				visual := NewRoomVisual(&roomName)
-				visual.Poly(pathInRoom, nil)
+				visual.Poly(stepsInCurrentRoom, nil)
 			}
 		}
 	}
