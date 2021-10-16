@@ -14,7 +14,7 @@
             "args": [ "-recurse", "-ErrorAction", "Ignore", "./dist/*" ]
         },
         {
-            "label": "buildWasm",
+            "label": "buildWithTinygo",
             "dependsOn": ["clearDist"],
             "presentation": {
                 "reveal": "silent",
@@ -26,8 +26,26 @@
             "args": [ "build", "-o", "dist/screepsgo.wasm", "-target", "wasm", "./src/..." ]
         },
         {
+            "label": "buildWithGo",
+            "dependsOn": ["clearDist"],
+            "presentation": {
+                "reveal": "silent",
+                "showReuseMessage": false
+            },
+            "group": "build",
+            "problemMatcher": [ "$go" ],
+            "options": {
+                "env": {
+                    "GOOS": "js",
+                    "GOARCH": "wasm"
+                }
+            },
+            "command": "go",
+            "args": [ "build", "-ldflags=-s -w", "-o", "dist/screepsgo.wasm", "./src" ]
+        },
+        {
             "label": "copyMainJs",
-            "dependsOn": ["buildWasm"],
+            "dependsOn": ["buildWithGo"],
             "type": "shell",
             "presentation": {
                 "reveal": "silent",

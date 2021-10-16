@@ -1,21 +1,34 @@
 package main
 
 import (
+	"runtime"
 	. "screepsgo/screeps-go"
-	"syscall/js"
 )
 
-func main() {
-	channel := make(chan bool)
+// Stack returns a formatted stack trace of the goroutine that calls it.
+// It calls runtime.Stack with a large enough buffer to capture the entire trace.
+func Stack() []byte {
+	buf := make([]byte, 1024)
+	for {
+		n := runtime.Stack(buf, false)
+		if n < len(buf) {
+			return buf[:n]
+		}
+		buf = make([]byte, 2*len(buf))
+	}
+}
 
-	runLoop := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
-		channel <- true
-		return nil
-	})
-	js.Global().Set("runLoop", runLoop)
+func main() {
+	defer func() {
+		if r := recover(); r != nil {
+			Console.Log(r)
+			Console.Log(string(Stack()))
+		}
+	}()
+
+	InitScreeps()
 
 	for {
-		<-channel
 		PreMain()
 
 		runCreeps()
