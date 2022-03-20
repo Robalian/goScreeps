@@ -1,199 +1,48 @@
-/*! https://mths.be/utf8js v3.0.0 by @mathias */
-var utf8 = {}
-;(function(root) {
-	var stringFromCharCode = String.fromCharCode;
+var utf8 = require('utf8')
 
-	// Taken from https://mths.be/punycode
-	function ucs2decode(string) {
-		var output = [];
-		var counter = 0;
-		var length = string.length;
-		var value;
-		var extra;
-		while (counter < length) {
-			value = string.charCodeAt(counter++);
-			if (value >= 0xD800 && value <= 0xDBFF && counter < length) {
-				// high surrogate, and there is a next character
-				extra = string.charCodeAt(counter++);
-				if ((extra & 0xFC00) == 0xDC00) { // low surrogate
-					output.push(((value & 0x3FF) << 10) + (extra & 0x3FF) + 0x10000);
-				} else {
-					// unmatched surrogate; only append this code unit, in case the next
-					// code unit is the high surrogate of a surrogate pair
-					output.push(value);
-					counter--;
-				}
-			} else {
-				output.push(value);
-			}
-		}
-		return output;
+class TextEncoder {
+	constructor(format) {
 	}
-
-	// Taken from https://mths.be/punycode
-	function ucs2encode(array) {
-		var length = array.length;
-		var index = -1;
-		var value;
-		var output = '';
-		while (++index < length) {
-			value = array[index];
-			if (value > 0xFFFF) {
-				value -= 0x10000;
-				output += stringFromCharCode(value >>> 10 & 0x3FF | 0xD800);
-				value = 0xDC00 | value & 0x3FF;
-			}
-			output += stringFromCharCode(value);
-		}
-		return output;
+	encode(text) {
+		let encodedString = utf8.encode(text);
+		let buffer = new Int8Array(encodedString.length);
+		for (let i=0; i<encodedString.length; ++i)
+			buffer[i] = encodedString.charCodeAt(i);
+		return buffer;
 	}
+}
+global.TextEncoder = TextEncoder;
 
-	function checkScalarValue(codePoint) {
-		if (codePoint >= 0xD800 && codePoint <= 0xDFFF) {
-			throw Error(
-				'Lone surrogate U+' + codePoint.toString(16).toUpperCase() +
-				' is not a scalar value'
-			);
-		}
+class TextDecoder {
+	constructor(format) {
 	}
-
-	function createByte(codePoint, shift) {
-		return stringFromCharCode(((codePoint >> shift) & 0x3F) | 0x80);
+	
+	decode(dataView) {
+		let memoryView = new Int8Array(dataView.buffer, dataView.byteOffset, dataView.byteLength)
+		let text = String.fromCharCode.apply(null, memoryView)
+		return utf8.decode(text);
 	}
+}
+global.TextDecoder = TextDecoder;
 
-	function encodeCodePoint(codePoint) {
-		if ((codePoint & 0xFFFFFF80) == 0) { // 1-byte sequence
-			return stringFromCharCode(codePoint);
+const crypto = {
+	getRandomValues: function(typedArray) {
+		for (let i=0; i<typedArray.length; ++i) {
+			typedArray[i] = _.random(0, 255, false);
 		}
-		var symbol = '';
-		if ((codePoint & 0xFFFFF800) == 0) { // 2-byte sequence
-			symbol = stringFromCharCode(((codePoint >> 6) & 0x1F) | 0xC0);
-		}
-		else if ((codePoint & 0xFFFF0000) == 0) { // 3-byte sequence
-			checkScalarValue(codePoint);
-			symbol = stringFromCharCode(((codePoint >> 12) & 0x0F) | 0xE0);
-			symbol += createByte(codePoint, 6);
-		}
-		else if ((codePoint & 0xFFE00000) == 0) { // 4-byte sequence
-			symbol = stringFromCharCode(((codePoint >> 18) & 0x07) | 0xF0);
-			symbol += createByte(codePoint, 12);
-			symbol += createByte(codePoint, 6);
-		}
-		symbol += stringFromCharCode((codePoint & 0x3F) | 0x80);
-		return symbol;
+		return typedArray;
 	}
+};
+global.crypto = crypto;
 
-	function utf8encode(string) {
-		var codePoints = ucs2decode(string);
-		var length = codePoints.length;
-		var index = -1;
-		var codePoint;
-		var byteString = '';
-		while (++index < length) {
-			codePoint = codePoints[index];
-			byteString += encodeCodePoint(codePoint);
-		}
-		return byteString;
+console.warn = console.log;
+
+const process = {
+	hrtime() {
+		return [Date.now(), 0];
 	}
-
-	function readContinuationByte() {
-		if (byteIndex >= byteCount) {
-			throw Error('Invalid byte index');
-		}
-
-		var continuationByte = byteArray[byteIndex] & 0xFF;
-		byteIndex++;
-
-		if ((continuationByte & 0xC0) == 0x80) {
-			return continuationByte & 0x3F;
-		}
-
-		// If we end up here, it’s not a continuation byte
-		throw Error('Invalid continuation byte');
-	}
-
-	function decodeSymbol() {
-		var byte1;
-		var byte2;
-		var byte3;
-		var byte4;
-		var codePoint;
-
-		if (byteIndex > byteCount) {
-			throw Error('Invalid byte index');
-		}
-
-		if (byteIndex == byteCount) {
-			return false;
-		}
-
-		// Read first byte
-		byte1 = byteArray[byteIndex] & 0xFF;
-		byteIndex++;
-
-		// 1-byte sequence (no continuation bytes)
-		if ((byte1 & 0x80) == 0) {
-			return byte1;
-		}
-
-		// 2-byte sequence
-		if ((byte1 & 0xE0) == 0xC0) {
-			byte2 = readContinuationByte();
-			codePoint = ((byte1 & 0x1F) << 6) | byte2;
-			if (codePoint >= 0x80) {
-				return codePoint;
-			} else {
-				throw Error('Invalid continuation byte');
-			}
-		}
-
-		// 3-byte sequence (may include unpaired surrogates)
-		if ((byte1 & 0xF0) == 0xE0) {
-			byte2 = readContinuationByte();
-			byte3 = readContinuationByte();
-			codePoint = ((byte1 & 0x0F) << 12) | (byte2 << 6) | byte3;
-			if (codePoint >= 0x0800) {
-				checkScalarValue(codePoint);
-				return codePoint;
-			} else {
-				throw Error('Invalid continuation byte');
-			}
-		}
-
-		// 4-byte sequence
-		if ((byte1 & 0xF8) == 0xF0) {
-			byte2 = readContinuationByte();
-			byte3 = readContinuationByte();
-			byte4 = readContinuationByte();
-			codePoint = ((byte1 & 0x07) << 0x12) | (byte2 << 0x0C) |
-				(byte3 << 0x06) | byte4;
-			if (codePoint >= 0x010000 && codePoint <= 0x10FFFF) {
-				return codePoint;
-			}
-		}
-
-		throw Error('Invalid UTF-8 detected');
-	}
-
-	var byteArray;
-	var byteCount;
-	var byteIndex;
-	function utf8decode(byteString) {
-		byteArray = ucs2decode(byteString);
-		byteCount = byteArray.length;
-		byteIndex = 0;
-		var codePoints = [];
-		var tmp;
-		while ((tmp = decodeSymbol()) !== false) {
-			codePoints.push(tmp);
-		}
-		return ucs2encode(codePoints);
-	}
-	root.version = '3.0.0';
-	root.encode = utf8encode;
-	root.decode = utf8decode;
-
-}(utf8));
+}
+global.process = process;
 
 //---------------------------------------------------------------------------------
 
@@ -208,6 +57,7 @@ const enosys = () => {
 	err.code = "ENOSYS";
 	return err;
 };
+
 if (!global.fs) {
 	let outputBuf = "";
 	global.fs = {
@@ -255,38 +105,71 @@ if (!global.fs) {
 	};
 }
 
-global.Go = class {
+	if (!global.process) {
+		global.process = {
+			getuid() { return -1; },
+			getgid() { return -1; },
+			geteuid() { return -1; },
+			getegid() { return -1; },
+			getgroups() { throw enosys(); },
+			pid: -1,
+			ppid: -1,
+			umask() { throw enosys(); },
+			cwd() { throw enosys(); },
+			chdir() { throw enosys(); },
+		}
+	}
+
+	if (!global.crypto && global.require) {
+		const nodeCrypto = require("crypto");
+		global.crypto = {
+			getRandomValues(b) {
+				nodeCrypto.randomFillSync(b);
+			},
+		};
+	}
+	if (!global.crypto) {
+		throw new Error("global.crypto is not available, polyfill required (getRandomValues only)");
+	}
+
+	if (!global.performance) {
+		global.performance = {
+			now() {
+				const [sec, nsec] = process.hrtime();
+				return sec * 1000 + nsec / 1000000;
+			},
+		};
+	}
+
+	if (!global.TextEncoder && global.require) {
+		global.TextEncoder = require("util").TextEncoder;
+	}
+	if (!global.TextEncoder) {
+		throw new Error("global.TextEncoder is not available, polyfill required");
+	}
+
+	if (!global.TextDecoder && global.require) {
+		global.TextDecoder = require("util").TextDecoder;
+	}
+	if (!global.TextDecoder) {
+		throw new Error("global.TextDecoder is not available, polyfill required");
+	}
+
+	// End of polyfills for common API.
+
+	const encoder = new TextEncoder("utf-8");
+	const decoder = new TextDecoder("utf-8");
+	
+	global.Go = class {
 	constructor() {
 		this.argv = ["js"];
 		this.env = {};
 		this.exit = (code) => {
 			if (code !== 0) {
-				console.log("exit code:", code);
+				console.warn("exit code:", code);
 			}
 		};
 		this._pendingEvent = null;
-		this.encoder = {
-			encode: function(text) {
-				let encodedString = utf8.encode(text);
-				let buffer = new Int8Array(encodedString.length);
-				for (let i=0; i<encodedString.length; ++i)
-					buffer[i] = encodedString.charCodeAt(i);
-				return buffer;
-			}
-		};
-		this.decoder = {
-			decode: function(dataView) {
-				let memoryView = new Int8Array(dataView.buffer, dataView.byteOffset, dataView.byteLength)
-				let text = String.fromCharCode.apply(null, memoryView)
-				return utf8.decode(text);
-			}
-		};
-		this.getRandomValues = function(typedArray) {
-			for (let i=0; i<typedArray.length; ++i) {
-				typedArray[i] = _.random(0, 255, false);
-			}
-			return typedArray;
-		};
 		this._scheduledTimeouts = new Map();
 		this._nextCallbackTimeoutID = 1;
 
@@ -383,10 +266,10 @@ global.Go = class {
 		const loadString = (addr) => {
 			const saddr = getInt64(addr + 0);
 			const len = getInt64(addr + 8);
-			return this.decoder.decode(new DataView(this._inst.exports.mem.buffer, saddr, len));
+			return decoder.decode(new DataView(this._inst.exports.mem.buffer, saddr, len));
 		}
 
-		const timeOrigin = Date.now();
+		const timeOrigin = Date.now() - performance.now();
 		this.importObject = {
 			go: {
 				// Go's SP does not change as long as no Go code is running. Some operations (e.g. calls, getters and setters)
@@ -409,11 +292,13 @@ global.Go = class {
 
 				// func wasmWrite(fd uintptr, p unsafe.Pointer, n int32)
 				"runtime.wasmWrite": (sp) => {
-					//sp >>>= 0;
-					//const fd = getInt64(sp + 8);
-					//const p = getInt64(sp + 16);
-					//const n = this.mem.getInt32(sp + 24, true);
-					//fs.writeSync(fd, new Uint8Array(this._inst.exports.mem.buffer, p, n));
+					/*
+					sp >>>= 0;
+					const fd = getInt64(sp + 8);
+					const p = getInt64(sp + 16);
+					const n = this.mem.getInt32(sp + 24, true);
+					fs.writeSync(fd, new Uint8Array(this._inst.exports.mem.buffer, p, n));
+					*/
 				},
 
 				// func resetMemoryDataView()
@@ -425,7 +310,7 @@ global.Go = class {
 				// func nanotime1() int64
 				"runtime.nanotime1": (sp) => {
 					sp >>>= 0;
-					setInt64(sp + 8, Date.now() * 1000000);
+						setInt64(sp + 8, (timeOrigin + performance.now()) * 1000000);
 				},
 
 				// func walltime() (sec int64, nsec int32)
@@ -439,39 +324,41 @@ global.Go = class {
 				// func scheduleTimeoutEvent(delay int64) int32
 				"runtime.scheduleTimeoutEvent": (sp) => {
 					// screeps doesn't have "setTimeout". Hopefully this function won't be needed.
-
-					//sp >>>= 0;
-					//const id = this._nextCallbackTimeoutID;
-					//this._nextCallbackTimeoutID++;
-					//this._scheduledTimeouts.set(id, setTimeout(
-					//	() => {
-					//		this._resume();
-					//		while (this._scheduledTimeouts.has(id)) {
-					//			// for some reason Go failed to register the timeout event, log and try again
-					//			// (temporary workaround for https://github.com/golang/go/issues/28975)
-					//			console.warn("scheduleTimeoutEvent: missed timeout event");
-					//			this._resume();
-					//		}
-					//	},
-					//	getInt64(sp + 8) + 1, // setTimeout has been seen to fire up to 1 millisecond early
-					//));
-					//this.mem.setInt32(sp + 16, id, true);
+					/*
+					sp >>>= 0;
+					const id = this._nextCallbackTimeoutID;
+					this._nextCallbackTimeoutID++;
+					this._scheduledTimeouts.set(id, setTimeout(
+						() => {
+							this._resume();
+							while (this._scheduledTimeouts.has(id)) {
+								// for some reason Go failed to register the timeout event, log and try again
+								// (temporary workaround for https://github.com/golang/go/issues/28975)
+								console.warn("scheduleTimeoutEvent: missed timeout event");
+								this._resume();
+							}
+						},
+						getInt64(sp + 8) + 1, // setTimeout has been seen to fire up to 1 millisecond early
+					));
+					this.mem.setInt32(sp + 16, id, true);
+					*/
 				},
 
 				// func clearTimeoutEvent(id int32)
 				"runtime.clearTimeoutEvent": (sp) => {
 					// screeps doesn't have "setTimeout". Hopefully this function won't be needed.
-
-					//sp >>>= 0;
-					//const id = this.mem.getInt32(sp + 8, true);
-					//clearTimeout(this._scheduledTimeouts.get(id));
-					//this._scheduledTimeouts.delete(id);
+					/*
+					sp >>>= 0;
+					const id = this.mem.getInt32(sp + 8, true);
+					clearTimeout(this._scheduledTimeouts.get(id));
+					this._scheduledTimeouts.delete(id);
+					*/
 				},
 
 				// func getRandomData(r []byte)
 				"runtime.getRandomData": (sp) => {
 					sp >>>= 0;
-					this.getRandomValues(loadSlice(sp + 8));
+					crypto.getRandomValues(loadSlice(sp + 8));
 				},
 
 				// func finalizeRef(v ref)
@@ -586,7 +473,7 @@ global.Go = class {
 				// valuePrepareString(v ref) (ref, int)
 				"syscall/js.valuePrepareString": (sp) => {
 					sp >>>= 0;
-					const str = this.encoder.encode(String(loadValue(sp + 8)));
+					const str = encoder.encode(String(loadValue(sp + 8)));
 					storeValue(sp + 16, str);
 					setInt64(sp + 24, str.length);
 				},
@@ -670,7 +557,7 @@ global.Go = class {
 
 		const strPtr = (str) => {
 			const ptr = offset;
-			const bytes = this.encoder.encode(str + "\0");
+			const bytes = encoder.encode(str + "\0");
 			new Uint8Array(this.mem.buffer, offset, bytes.length).set(bytes);
 			offset += bytes.length;
 			if (offset % 8 !== 0) {
@@ -680,11 +567,13 @@ global.Go = class {
 		};
 
 		const argc = this.argv.length;
+
 		const argvPtrs = [];
 		this.argv.forEach((arg) => {
 			argvPtrs.push(strPtr(arg));
 		});
 		argvPtrs.push(0);
+
 		const keys = Object.keys(this.env).sort();
 		keys.forEach((key) => {
 			argvPtrs.push(strPtr(`${key}=${this.env[key]}`));

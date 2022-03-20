@@ -23,7 +23,7 @@
             "group": "build",
             "problemMatcher": [ "$go" ],
             "command": "tinygo",
-            "args": [ "build", "-o", "dist/screepsgo.wasm", "-target", "wasm", "./src/..." ]
+            "args": [ "build", "-o", "dist/screepsgo.wasm", "-target", "wasm", "./..." ]
         },
         {
             "label": "buildWithGo",
@@ -41,10 +41,10 @@
                 }
             },
             "command": "go",
-            "args": [ "build", "-ldflags=-s -w", "-o", "dist/screepsgo.wasm", "./src" ]
+            "args": [ "build", "-ldflags=-s -w", "-o", "dist/screepsgo.wasm", "." ]
         },
         {
-            "label": "copyMainJs",
+            "label": "copyJs",
             "dependsOn": ["buildWithGo"],
             "type": "shell",
             "presentation": {
@@ -54,11 +54,11 @@
             "group": "build",
             "problemMatcher": [],
             "command": "cp",
-            "args": [ "./js/main.js", "./dist/main.js" ]
+            "args": [ "-r", "./js/*", "./dist/" ]
         },
         {
             "label": "build",
-            "dependsOn": ["copyMainJs"],
+            "dependsOn": ["copyJs"],
             "presentation": {
                 "reveal": "silent",
                 "echo": false,

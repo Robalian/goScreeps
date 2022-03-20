@@ -40,8 +40,8 @@ func (cpu Cpu) GetHeapStatistics() HeapStatistics {
 	}
 }
 
-func (cpu Cpu) GetUsed() int {
-	return cpu.ref.Call("getUsed").Int()
+func (cpu Cpu) GetUsed() float64 {
+	return cpu.ref.Call("getUsed").Float()
 }
 
 func (cpu Cpu) Halt() {

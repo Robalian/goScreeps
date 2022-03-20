@@ -1,7 +1,7 @@
-package main
+package src
 
 import (
-	"fmt"
+	"encoding/json"
 	. "screepsgo/screeps-go"
 	"strings"
 )
@@ -19,19 +19,22 @@ func removeWhiteSpace(s string) string {
 }
 
 func setGrafanaStats() {
-	//Console.Log("pre marshal")
-	//bytes, _ := json.Marshal(map[string]interface{}{
-	//	"globalAge": Game.Time() - globalResetTick,
-	//	"profiling": map[string]interface{}{
-	//		"bucket":         Game.Cpu().Bucket,
-	//		"limit":          Game.Cpu().Limit,
-	//		"heapStatistics": Game.Cpu().GetHeapStatistics(),
-	//		"memory":         len(RawMemory.Get()),
-	//	},
-	//})
-	//Console.Log("post marshal")
-	heapStatistics := Game.Cpu().GetHeapStatistics()
+	//*
+	bytes, _ := json.Marshal(map[string]interface{}{
+		"globalAge": Game.Time() - globalResetTick,
+		"profiling": map[string]interface{}{
+			"bucket":         Game.Cpu().Bucket,
+			"limit":          Game.Cpu().Limit,
+			"tick":           Game.Cpu().GetUsed(),
+			"heapStatistics": Game.Cpu().GetHeapStatistics(),
+			"memory":         len(RawMemory.Get()),
+		},
+	})
+	(*RawMemory.Segments())[99] = string(bytes)
 
+	/*/
+
+	heapStatistics := Game.Cpu().GetHeapStatistics()
 	(*RawMemory.Segments())[99] = removeWhiteSpace(fmt.Sprintf(`{
 		"globalAge": %d,
 		"profiling": {
@@ -65,4 +68,5 @@ func setGrafanaStats() {
 		heapStatistics.Externally_allocated_size,
 		len(RawMemory.Get()),
 	))
+	//*/
 }

@@ -1,4 +1,4 @@
-package main
+package src
 
 import (
 	. "screepsgo/screeps-go"

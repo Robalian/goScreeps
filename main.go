@@ -3,6 +3,7 @@ package main
 import (
 	"runtime"
 	. "screepsgo/screeps-go"
+	. "screepsgo/src"
 )
 
 // Stack returns a formatted stack trace of the goroutine that calls it.
@@ -31,19 +32,7 @@ func main() {
 	for {
 		PreMain()
 
-		runCreeps()
-
-		//
-		spawnCreeps()
-
-		//
-		runTowers()
-
-		//
-		pathfinderExample()
-
-		//
-		setGrafanaStats()
+		Loop()
 
 		PostMain()
 	}
