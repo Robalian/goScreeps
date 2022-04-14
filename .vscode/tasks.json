@@ -23,7 +23,7 @@
             "group": "build",
             "problemMatcher": [ "$go" ],
             "command": "tinygo",
-            "args": [ "build", "-o", "dist/screepsgo.wasm", "-target", "wasm", "./..." ]
+            "args": [ "build", "-o", "dist/screepsgo.wasm", "-target", "wasm", "-no-debug", "./..." ]
         },
         {
             "label": "buildWithGo",
@@ -45,7 +45,7 @@
         },
         {
             "label": "copyJs",
-            "dependsOn": ["buildWithGo"],
+            "dependsOn": ["buildWithTinygo"],
             "type": "shell",
             "presentation": {
                 "reveal": "silent",
